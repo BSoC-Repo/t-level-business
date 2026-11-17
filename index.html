@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exam Revision Hub</title>
+<meta name="description" content="Interactive exam revision resource for B&amp;FC T Level students: topic summaries, flashcards, practice quiz, exam technique, revision planner and self-assessment.">
+<script>
+  /* Apply the saved theme before the page paints, so there is no flash of the wrong theme. */
+  (function () {
+    try {
+      var saved = localStorage.getItem('erh-theme');
+      if (saved === 'light' || saved === 'dark') { document.documentElement.setAttribute('data-theme', saved); }
+    } catch (e) { /* Storage unavailable: follow the device setting. */ }
+  })();
+</script>
+<style>
+/* =====================================================================
+   1. DESIGN TOKENS (BFC-layout colour scheme)
+   Teal #62B19F for fills, text-safe teal #24695A for links and labels,
+   navy #1F3A4D for the header and headings.
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#F3F5F6; --surface:#ffffff; --surface-2:#EDF2F3; --ink:#1C2B36; --muted:#475864;
+  --line:#C5D0D6; --accent:#24695A; --accent-ink:#ffffff; --accent-soft:#E7F3F0;
+  --navy:#1F3A4D; --teal:#62B19F; --heading:#1F3A4D;
+  --btn-bg:#62B19F; --btn-text:#1F3A4D; --btn-hover:#4E9C8A;
+  --good:#1B6535; --good-bg:#E6F4EA; --warn:#6B4E00; --warn-bg:#FFF5D6; --bad:#8A2E12; --bad-bg:#FCEBE4;
+  --focus:#1F3A4D;
+  --radius:10px;
+  --shadow:0 1px 3px rgba(16,32,42,.08), 0 4px 14px rgba(16,32,42,.06);
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace;
+}
+/* Dark mode follows the device unless the reader chose light, or the reader chose dark. */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]){
+    color-scheme:dark;
+    --bg:#111b22; --surface:#18252e; --surface-2:#20313c; --ink:#e8eef1; --muted:#b4c1c9;
+    --line:#3a4d59; --accent:#7fc7b6; --accent-ink:#10202a; --accent-soft:#1b3a36;
+    --heading:#e8eef1; --btn-hover:#7fc7b6;
+    --good:#7fd6a0; --good-bg:#17301f; --warn:#f2c078; --warn-bg:#36290f; --bad:#f5a19b; --bad-bg:#3a1b19;
+    --focus:#ffffff;
+    --shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme=dark]{
+  color-scheme:dark;
+  --bg:#111b22; --surface:#18252e; --surface-2:#20313c; --ink:#e8eef1; --muted:#b4c1c9;
+  --line:#3a4d59; --accent:#7fc7b6; --accent-ink:#10202a; --accent-soft:#1b3a36;
+  --heading:#e8eef1; --btn-hover:#7fc7b6;
+  --good:#7fd6a0; --good-bg:#17301f; --warn:#f2c078; --warn-bg:#36290f; --bad:#f5a19b; --bad-bg:#3a1b19;
+  --focus:#ffffff;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+}
+
+/* =====================================================================
+   2. BASE
+   ===================================================================== */
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:1.0625rem;line-height:1.6}
+h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em}
+h2,h3,h4{color:var(--heading)}
+h2{font-size:1.6rem}
+h3{font-size:1.25rem}
+h4{font-size:1.05rem}
+p{margin:0 0 1em}
+a{color:var(--accent)}
+code{font-family:var(--mono);font-size:.92em;background:var(--surface-2);padding:.1em .35em;border-radius:4px}
+pre{font-family:var(--mono);font-size:.9rem;line-height:1.5;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;margin:0 0 1em;tab-size:4}
+pre code{background:none;padding:0;font-size:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.visually-hidden{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:absolute;left:16px;top:-60px;background:var(--surface);color:var(--ink);padding:10px 16px;border-radius:6px;z-index:100;font-weight:600}
+.skip-link:focus{top:12px}
+.muted{color:var(--muted)}
+
+/* =====================================================================
+   3. HEADER (navy in both modes, teal rule, logo top left)
+   ===================================================================== */
+header.hero{background:var(--navy);color:#fff;border-bottom:6px solid var(--teal)}
+.hero-inner{max-width:1140px;margin:0 auto;padding:16px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.hero-logo{height:96px;width:auto;display:block}
+.hero-text{flex:1 1 260px}
+.hero-text h1{font-size:clamp(1.5rem,3.2vw,2.1rem);margin:0 0 4px;color:#fff}
+.hero-text p{margin:0;color:#dbe6ec}
+.hero :focus-visible{outline-color:#fff}
+.theme-toggle{background:transparent;color:#fff;border:2px solid #fff;border-radius:999px;padding:8px 16px;font:inherit;font-size:.95rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.theme-toggle:hover{background:rgba(255,255,255,.12)}
+
+/* =====================================================================
+   4. TAB NAVIGATION (sticky so it stays visible while scrolling)
+   ===================================================================== */
+.tabs-nav{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+.tablist{max-width:1140px;margin:0 auto;padding:0 8px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin}
+.tab{flex:0 0 auto;background:transparent;border:0;border-bottom:4px solid transparent;color:var(--ink);font:inherit;font-size:.98rem;font-weight:600;padding:14px 14px 10px;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--accent);background:var(--surface-2)}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:focus-visible{outline-offset:-3px}
+
+/* =====================================================================
+   5. LAYOUT AND COMPONENTS
+   ===================================================================== */
+main{max-width:1140px;margin:0 auto;padding:28px 16px 64px}
+.panel:focus{outline:none}
+.panel:focus-visible{outline:3px solid var(--focus);outline-offset:6px;border-radius:4px}
+.panel-intro{max-width:72ch;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);margin-bottom:20px}
+.grid{display:grid;gap:20px}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.note{border-left:5px solid var(--accent);background:var(--accent-soft);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 20px}
+.task{border-left:5px solid var(--warn);background:var(--warn-bg);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 20px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}
+.btn{background:var(--btn-bg);color:var(--btn-text);border:2px solid var(--btn-bg);border-radius:8px;padding:9px 18px;font:inherit;font-size:.98rem;font-weight:700;cursor:pointer;line-height:1.3}
+.btn:hover{background:var(--btn-hover);border-color:var(--btn-hover)}
+.btn.secondary{background:transparent;color:var(--ink);border-color:var(--accent)}
+.btn.secondary:hover{background:var(--accent-soft)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+label.inline{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+select,input[type=date],input[type=text],input[type=number]{font:inherit;font-size:1rem;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:8px;padding:7px 10px;min-height:42px}
+select:hover,input:hover{border-color:var(--muted)}
+.tag{display:inline-block;font-size:.8rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 10px}
+.status-msg{min-height:1.6em;font-weight:600;color:var(--good)}
+
+/* Progress bar */
+.progress{height:16px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:var(--teal);border-radius:999px;transition:width .4s ease}
+
+/* =====================================================================
+   6. HOME
+   ===================================================================== */
+.countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0 8px}
+.count-box{background:var(--navy);color:#fff;border-radius:10px;padding:14px 8px;text-align:center;border-bottom:4px solid var(--teal)}
+.count-num{display:block;font-size:clamp(1.6rem,4vw,2.3rem);font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.count-label{font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:#dbe6ec}
+dl.details{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;margin:0}
+dl.details dt{font-weight:700;color:var(--heading)}
+dl.details dd{margin:0}
+ol.steps{padding-left:1.3em;margin:0}
+ol.steps li{margin-bottom:.5em}
+.stat{font-size:1.9rem;font-weight:800;color:var(--heading);line-height:1.1}
+
+/* =====================================================================
+   7. TOPIC SUMMARIES (native details/summary for accessible collapsing)
+   ===================================================================== */
+details.topic-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+details.topic-card>summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;gap:14px;font-weight:700;font-size:1.15rem;color:var(--heading)}
+details.topic-card>summary::-webkit-details-marker{display:none}
+details.topic-card>summary::before{content:"";flex:0 0 auto;width:12px;height:12px;border-right:3px solid var(--accent);border-bottom:3px solid var(--accent);transform:rotate(-45deg);transition:transform .2s ease;margin-right:4px}
+details.topic-card[open]>summary::before{transform:rotate(45deg)}
+details.topic-card>summary:hover{background:var(--surface-2)}
+details.topic-card>summary:focus-visible{outline-offset:-3px}
+.topic-num{flex:0 0 auto;display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--teal);color:var(--navy);font-size:1rem}
+.topic-body{padding:4px 22px 22px;border-top:1px solid var(--line)}
+.topic-body h3{margin-top:18px}
+.topic-body ul{padding-left:1.25em}
+.topic-body li{margin-bottom:.4em}
+dl.defs{margin:0}
+dl.defs div{padding:10px 14px;border-left:4px solid var(--teal);background:var(--surface-2);border-radius:0 6px 6px 0;margin-bottom:8px}
+dl.defs dt{font-weight:700;color:var(--heading)}
+dl.defs dd{margin:0}
+.example{border:2px dashed var(--line);border-radius:10px;padding:14px 18px;margin-top:8px}
+table.data{width:100%;border-collapse:collapse;margin:0 0 1em;font-size:.95rem}
+table.data th,table.data td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+table.data th{background:var(--surface-2);color:var(--heading)}
+.table-wrap{overflow-x:auto}
+
+/* =====================================================================
+   8. FLASHCARDS (3D flip; faces stacked in a grid so long text never overflows)
+   ===================================================================== */
+.flash-wrap{max-width:760px;margin:0 auto}
+.flashcard{display:block;width:100%;background:none;border:0;padding:0;cursor:pointer;perspective:1400px;font:inherit;color:inherit;text-align:center;border-radius:14px}
+.flashcard-inner{display:grid;transition:transform .55s ease;transform-style:preserve-3d;min-height:290px}
+.flashcard.is-flipped .flashcard-inner{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;padding:28px 26px;border-radius:14px;border:2px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
+.face-back{transform:rotateY(180deg);background:var(--accent-soft);border-color:var(--accent)}
+.face-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.face-text{font-size:clamp(1.1rem,2.6vw,1.45rem);font-weight:600;max-width:58ch}
+.face-back .face-text{font-size:clamp(1rem,2.2vw,1.15rem);font-weight:500}
+.face-hint{font-size:.85rem;color:var(--muted)}
+.flash-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.flash-count{font-weight:700;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.flashcard-inner,.progress-fill,details.topic-card>summary::before{transition:none}}
+
+/* =====================================================================
+   9. QUIZ
+   ===================================================================== */
+.quiz-card{max-width:820px}
+fieldset{border:0;padding:0;margin:0;min-width:0}
+legend{padding:0}
+.q-meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font-weight:700;color:var(--muted)}
+.q-text{font-size:1.15rem;font-weight:600;color:var(--ink);margin:0 0 12px}
+.options{list-style:none;padding:0;margin:0 0 16px;display:grid;gap:10px}
+.option label{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;background:var(--surface)}
+.option label:hover{border-color:var(--accent)}
+.option input{margin-top:.3em;width:1.15em;height:1.15em;accent-color:var(--accent);flex:0 0 auto}
+.option input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.option.is-correct label{border-color:var(--good);background:var(--good-bg)}
+.option.is-wrong label{border-color:var(--bad);background:var(--bad-bg)}
+.opt-flag{display:block;font-size:.85rem;font-weight:700;margin-top:2px}
+.is-correct .opt-flag{color:var(--good)}
+.is-wrong .opt-flag{color:var(--bad)}
+.feedback{border-radius:10px;padding:14px 18px;margin-bottom:16px}
+.feedback.good{background:var(--good-bg);border-left:5px solid var(--good)}
+.feedback.bad{background:var(--bad-bg);border-left:5px solid var(--bad)}
+.feedback.info{background:var(--warn-bg);border-left:5px solid var(--warn)}
+.feedback strong{display:block;margin-bottom:4px}
+.breakdown-row{display:grid;grid-template-columns:minmax(150px,1.3fr) 2fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.breakdown-row:last-child{border-bottom:0}
+.score-big{font-size:clamp(2.2rem,6vw,3.2rem);font-weight:800;color:var(--heading);line-height:1}
+
+/* =====================================================================
+   10. EXAM TECHNIQUE
+   ===================================================================== */
+.cmd-table td:first-child{font-weight:700;color:var(--heading);white-space:nowrap}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;align-items:end;margin-bottom:12px}
+.calc label{display:block;font-weight:600;margin-bottom:4px}
+.calc input{width:100%}
+.calc-out{font-size:1.05rem;font-weight:600}
+
+/* =====================================================================
+   11. REVISION PLANNER AND CHECKLIST
+   ===================================================================== */
+table.planner{width:100%;border-collapse:collapse}
+table.planner th,table.planner td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.planner th{background:var(--surface-2);color:var(--heading);font-size:.95rem}
+table.planner tbody tr{border-left:6px solid var(--line)}
+table.planner tbody tr[data-rag=red]{border-left-color:var(--bad)}
+table.planner tbody tr[data-rag=amber]{border-left-color:var(--warn)}
+table.planner tbody tr[data-rag=green]{border-left-color:var(--good)}
+table.planner select,table.planner input{width:100%}
+.rag-chip{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:700;border-radius:999px;padding:2px 10px;margin-top:6px;border:1px solid var(--line);color:var(--muted)}
+.rag-chip::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--line)}
+.rag-chip.red{color:var(--bad);background:var(--bad-bg);border-color:var(--bad)}
+.rag-chip.red::before{background:var(--bad)}
+.rag-chip.amber{color:var(--warn);background:var(--warn-bg);border-color:var(--warn)}
+.rag-chip.amber::before{background:var(--warn)}
+.rag-chip.green{color:var(--good);background:var(--good-bg);border-color:var(--good)}
+.rag-chip.green::before{background:var(--good)}
+.rag-summary{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 6px}
+.checklist-group{margin-bottom:18px}
+.checklist-group legend{font-weight:700;font-size:1.08rem;color:var(--heading);margin-bottom:8px}
+.check-item{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--surface);cursor:pointer}
+.check-item:hover{border-color:var(--accent)}
+.check-item input{width:1.25em;height:1.25em;margin-top:.2em;accent-color:var(--accent);flex:0 0 auto}
+.check-item.done{background:var(--good-bg);border-color:var(--good)}
+
+/* =====================================================================
+   12. RESPONSIVE
+   ===================================================================== */
+@media (max-width:700px){
+  body{font-size:1rem}
+  .hero-logo{height:64px}
+  .hero-inner{gap:12px}
+  .card{padding:16px}
+  .countdown{grid-template-columns:repeat(2,1fr)}
+  dl.details{grid-template-columns:1fr}
+  dl.details dd{margin-bottom:6px}
+  .breakdown-row{grid-template-columns:1fr auto}
+  .breakdown-row .progress{grid-column:1 / -1;grid-row:2}
+  /* Planner table becomes stacked cards on narrow screens */
+  table.planner thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  table.planner,table.planner tbody,table.planner tr,table.planner td{display:block;width:100%}
+  table.planner tr{border:1px solid var(--line);border-left-width:6px;border-radius:8px;margin-bottom:14px;background:var(--surface);padding:6px 0}
+  table.planner td{border-bottom:0;padding:6px 12px}
+  table.planner td[data-label]::before{content:attr(data-label);display:block;font-size:.85rem;font-weight:700;color:var(--muted);margin-bottom:2px}
+  .flash-controls{justify-content:center}
+}
+
+/* =====================================================================
+   13. PRINT (prints the topic summaries only, fully expanded)
+   ===================================================================== */
+@media print{
+  :root,:root[data-theme=dark]{--bg:#fff;--surface:#fff;--surface-2:#f2f2f2;--ink:#000;--muted:#333;--line:#999;--heading:#000;--accent:#000;--accent-soft:#fff}
+  body{background:#fff;color:#000;font-size:11pt}
+  header.hero,.tabs-nav,.skip-link,.no-print,.panel:not(#panel-summaries){display:none !important}
+  #panel-summaries{display:block !important}
+  main{padding:0;max-width:none}
+  .print-title{display:block !important;font-size:18pt;margin-bottom:10pt}
+  details.topic-card{box-shadow:none;border:1px solid #999;break-inside:auto;page-break-inside:auto;margin-bottom:12pt}
+  details.topic-card>summary{padding:8pt 10pt}
+  details.topic-card>summary::before{display:none}
+  .topic-num{background:#fff;border:1px solid #000;color:#000}
+  .topic-body{padding:4pt 10pt 10pt}
+  pre,dl.defs div,.example,table.data{break-inside:avoid;page-break-inside:avoid}
+  pre{white-space:pre-wrap;border:1px solid #999}
+  a{color:#000;text-decoration:underline}
+}
+.print-title{display:none}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<!-- =====================================================================
+     HEADER
+     ===================================================================== -->
+<header class="hero">
+  <div class="hero-inner">
+    <img class="hero-logo" src="data:image/png;base64,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" alt="B&amp;FC Group">
+    <div class="hero-text">
+      <h1>Exam Revision Hub</h1>
+      <p>Summaries, flashcards, practice questions and planning tools to help you prepare with confidence.</p>
+    </div>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false">
+      <span aria-hidden="true" id="theme-icon">&#9790;</span> <span id="theme-label">Dark mode</span>
+    </button>
+  </div>
+</header>
+
+<!-- =====================================================================
+     TAB NAVIGATION (WAI-ARIA tabs pattern: arrow keys, Home and End)
+     ===================================================================== -->
+<nav class="tabs-nav" aria-label="Resource sections">
+  <div class="tablist" role="tablist" aria-label="Revision sections">
+    <button type="button" class="tab" role="tab" id="tab-home" aria-controls="panel-home" aria-selected="true">Home</button>
+    <button type="button" class="tab" role="tab" id="tab-summaries" aria-controls="panel-summaries" aria-selected="false" tabindex="-1">Topic summaries</button>
+    <button type="button" class="tab" role="tab" id="tab-flashcards" aria-controls="panel-flashcards" aria-selected="false" tabindex="-1">Flashcards</button>
+    <button type="button" class="tab" role="tab" id="tab-quiz" aria-controls="panel-quiz" aria-selected="false" tabindex="-1">Practice quiz</button>
+    <button type="button" class="tab" role="tab" id="tab-technique" aria-controls="panel-technique" aria-selected="false" tabindex="-1">Exam technique</button>
+    <button type="button" class="tab" role="tab" id="tab-planner" aria-controls="panel-planner" aria-selected="false" tabindex="-1">Revision planner</button>
+    <button type="button" class="tab" role="tab" id="tab-checklist" aria-controls="panel-checklist" aria-selected="false" tabindex="-1">Self-assessment</button>
+  </div>
+</nav>
+
+<main id="main" tabindex="-1">
+
+  <!-- ===================================================================
+       1. HOME
+       =================================================================== -->
+  <section class="panel" id="panel-home" role="tabpanel" aria-labelledby="tab-home" tabindex="0">
+    <h2>Welcome to your exam revision</h2>
+    <p class="panel-intro">This resource brings together everything you need to revise for the exam. Work through it at your own pace and come back to it regularly: short, frequent sessions are far more effective than one long session the night before.</p>
+
+    <div class="grid grid-2">
+      <div class="card" aria-labelledby="countdown-heading">
+        <h3 id="countdown-heading">Countdown to the exam</h3>
+        <div class="countdown" id="countdown" aria-hidden="true">
+          <div class="count-box"><span class="count-num" id="cd-days">0</span><span class="count-label">Days</span></div>
+          <div class="count-box"><span class="count-num" id="cd-hours">0</span><span class="count-label">Hours</span></div>
+          <div class="count-box"><span class="count-num" id="cd-mins">0</span><span class="count-label">Minutes</span></div>
+          <div class="count-box"><span class="count-num" id="cd-secs">0</span><span class="count-label">Seconds</span></div>
+        </div>
+        <p id="countdown-text" class="muted"></p>
+      </div>
+
+      <div class="card">
+        <h3>Exam details</h3>
+        <dl class="details" id="exam-details"></dl>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Learning objectives</h3>
+      <p>By the end of using this resource, you will be able to:</p>
+      <ol class="steps">
+        <li>Recall and explain the key concepts for each topic.</li>
+        <li>Apply your knowledge to exam-style questions.</li>
+        <li>Identify your personal areas for improvement and plan your revision.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>How to use this resource</h3>
+      <ol class="steps">
+        <li><strong>Start with the self-assessment.</strong> Tick the outcomes you already feel secure with, so you know where to begin.</li>
+        <li><strong>Rate your confidence</strong> in the revision planner (red, amber or green) and set dates to revisit each topic, starting with red topics.</li>
+        <li><strong>Read the topic summaries</strong> and make your own notes. Try to explain each key point aloud without looking.</li>
+        <li><strong>Use the flashcards</strong> for active recall. Say your answer before you flip the card, then check it honestly.</li>
+        <li><strong>Take the practice quiz</strong> and read every explanation, including for the questions you answered correctly.</li>
+        <li><strong>Review the exam technique guidance</strong> and practise planning answers to the command words.</li>
+        <li><strong>Update your planner and checklist</strong> after each session. Your entries are saved in this browser on this device only.</li>
+      </ol>
+    </div>
+
+    <h3>Your progress so far</h3>
+    <div class="grid grid-3" id="home-progress">
+      <div class="card">
+        <p class="muted" style="margin:0">Self-assessment</p>
+        <p class="stat" id="hp-checklist">0%</p>
+        <div class="progress" aria-hidden="true"><div class="progress-fill" id="hp-checklist-bar"></div></div>
+      </div>
+      <div class="card">
+        <p class="muted" style="margin:0">Topic confidence (planner)</p>
+        <p class="stat" id="hp-rag">Not rated yet</p>
+        <p class="muted" id="hp-rag-detail" style="margin:0"></p>
+      </div>
+      <div class="card">
+        <p class="muted" style="margin:0">Most recent quiz score</p>
+        <p class="stat" id="hp-quiz">No attempts yet</p>
+        <p class="muted" id="hp-quiz-detail" style="margin:0"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       2. TOPIC SUMMARIES (rendered from the TOPICS array)
+       =================================================================== -->
+  <section class="panel" id="panel-summaries" role="tabpanel" aria-labelledby="tab-summaries" tabindex="0" hidden>
+    <h1 class="print-title">Exam Revision Hub: topic summaries</h1>
+    <h2>Topic summaries</h2>
+    <p class="panel-intro">Each card contains the key points, essential definitions and a short worked example. Select a topic heading to open or close it.</p>
+    <div class="toolbar no-print">
+      <button type="button" class="btn secondary" id="expand-all">Expand all</button>
+      <button type="button" class="btn secondary" id="collapse-all">Collapse all</button>
+      <button type="button" class="btn" id="print-summaries">Print summaries</button>
+    </div>
+    <div id="summaries-list"></div>
+  </section>
+
+  <!-- ===================================================================
+       3. FLASHCARDS (rendered from the FLASHCARDS array)
+       =================================================================== -->
+  <section class="panel" id="panel-flashcards" role="tabpanel" aria-labelledby="tab-flashcards" tabindex="0" hidden>
+    <h2>Flashcards</h2>
+    <p class="panel-intro">Read the term, say your answer aloud, then flip the card to check. Select the card (or press Enter or Space) to flip it, and use the left and right arrow keys to move between cards.</p>
+    <div class="flash-wrap">
+      <div class="toolbar">
+        <label class="inline" for="flash-topic">Topic
+          <select id="flash-topic"></select>
+        </label>
+        <button type="button" class="btn secondary" id="flash-shuffle">Shuffle</button>
+        <button type="button" class="btn secondary" id="flash-reset">Original order</button>
+      </div>
+      <button type="button" class="flashcard" id="flashcard" aria-describedby="flash-help">
+        <span class="flashcard-inner">
+          <span class="face face-front" id="flash-front">
+            <span class="face-label" id="flash-front-topic"></span>
+            <span class="face-text" id="flash-front-text"></span>
+            <span class="face-hint">Select to reveal the answer</span>
+          </span>
+          <span class="face face-back" id="flash-back" aria-hidden="true">
+            <span class="face-label">Answer</span>
+            <span class="face-text" id="flash-back-text"></span>
+            <span class="face-hint">Select to return to the question</span>
+          </span>
+        </span>
+      </button>
+      <p id="flash-help" class="visually-hidden">Flashcard. Press Enter or Space to flip between the question and the answer.</p>
+      <div class="flash-controls">
+        <button type="button" class="btn secondary" id="flash-prev"><span aria-hidden="true">&larr; </span>Previous</button>
+        <span class="flash-count" id="flash-count" aria-live="polite"></span>
+        <button type="button" class="btn" id="flash-next">Next<span aria-hidden="true"> &rarr;</span></button>
+      </div>
+      <p class="visually-hidden" id="flash-live" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       4. PRACTICE QUIZ (rendered from the QUIZ_QUESTIONS array)
+       =================================================================== -->
+  <section class="panel" id="panel-quiz" role="tabpanel" aria-labelledby="tab-quiz" tabindex="0" hidden>
+    <h2>Practice quiz</h2>
+    <p class="panel-intro">Answer each multiple-choice question, then check your answer for instant feedback and an explanation. At the end you will see your score with a breakdown by topic.</p>
+
+    <div class="card quiz-card" id="quiz-start">
+      <h3>Set up your quiz</h3>
+      <div class="toolbar">
+        <label class="inline" for="quiz-topic">Topic
+          <select id="quiz-topic"></select>
+        </label>
+        <button type="button" class="btn" id="quiz-begin">Start quiz</button>
+      </div>
+      <p class="muted" id="quiz-count-info" style="margin:0"></p>
+    </div>
+
+    <div class="card quiz-card" id="quiz-area" hidden>
+      <form id="quiz-form" novalidate>
+        <fieldset>
+          <legend class="visually-hidden" id="q-legend"></legend>
+          <div class="q-meta">
+            <span id="q-progress"></span>
+            <span class="tag" id="q-topic"></span>
+          </div>
+          <div class="progress" aria-hidden="true" style="margin-bottom:16px"><div class="progress-fill" id="q-bar"></div></div>
+          <p class="q-text" id="q-text"></p>
+          <pre id="q-code" hidden><code></code></pre>
+          <ul class="options" id="q-options"></ul>
+        </fieldset>
+        <div id="q-feedback" role="status" aria-live="polite"></div>
+        <div class="toolbar" style="margin:0">
+          <button type="submit" class="btn" id="q-check">Check answer</button>
+          <button type="button" class="btn" id="q-next" hidden>Next question</button>
+          <button type="button" class="btn secondary" id="q-quit">End quiz</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card quiz-card" id="quiz-results" hidden tabindex="-1" aria-labelledby="results-heading">
+      <h3 id="results-heading">Your results</h3>
+      <p class="score-big" id="r-score"></p>
+      <p id="r-message"></p>
+      <h4>Breakdown by topic</h4>
+      <div id="r-breakdown"></div>
+      <div class="toolbar" style="margin-top:18px">
+        <button type="button" class="btn" id="r-retry-wrong">Retry incorrect questions</button>
+        <button type="button" class="btn secondary" id="r-restart">New quiz</button>
+        <button type="button" class="btn secondary" id="r-planner">Update my revision planner</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       5. EXAM TECHNIQUE
+       =================================================================== -->
+  <section class="panel" id="panel-technique" role="tabpanel" aria-labelledby="tab-technique" tabindex="0" hidden>
+    <h2>Exam technique</h2>
+    <p class="panel-intro">Good knowledge only earns marks when it answers the question that was asked. Use this guidance to make sure your answers are focused, well structured and completed on time.</p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Reading the question</h3>
+        <p>Before you write anything, use the <strong>BUG</strong> method:</p>
+        <ul>
+          <li><strong>Box</strong> the command word (for example, <em>explain</em> or <em>evaluate</em>). It tells you what kind of answer is expected.</li>
+          <li><strong>Underline</strong> the key terms and any limits, such as "two reasons" or "with reference to the scenario".</li>
+          <li><strong>Glance</strong> at the marks available. They tell you how many distinct points or how much depth is needed.</li>
+        </ul>
+        <p>Read the whole question twice, and read any scenario carefully: examiners often reward answers that refer directly to it.</p>
+      </div>
+      <div class="card">
+        <h3>Scenario-based questions</h3>
+        <ul>
+          <li>Read the scenario first and highlight key facts: the type of business, its size, its problems and any figures.</li>
+          <li>Use the business's name and details in your answer. Generic textbook answers rarely reach the top marks.</li>
+          <li>Ask yourself: "What would this mean for <em>this</em> business, its staff and its customers?"</li>
+          <li>Watch for words such as <em>one</em>, <em>two</em>, <em>most suitable</em> and <em>other than</em>.</li>
+          <li>Never leave a question blank: a sensible, applied point can still earn marks.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Command words</h3>
+      <p>Command words tell you the depth and type of response required. The list moves roughly from lower to higher demand.</p>
+      <div class="table-wrap">
+        <table class="data cmd-table">
+          <caption class="visually-hidden">Common command words with their meaning and a tip for each</caption>
+          <thead><tr><th scope="col">Command word</th><th scope="col">What it means</th><th scope="col">Tip</th></tr></thead>
+          <tbody id="command-words"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Time management</h3>
+        <ul>
+          <li>Spend the first few minutes reading the paper and choosing an order to tackle it.</li>
+          <li>Allocate time in proportion to marks, and stick to it. Move on if you overrun and return later.</li>
+          <li>Answer the questions you are most confident about first to build momentum.</li>
+          <li>Leave around ten minutes at the end to check your answers and calculations.</li>
+          <li>If time runs short, write bullet points: they can still earn marks.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Time per mark calculator</h3>
+        <div class="calc">
+          <div><label for="calc-total">Exam length (minutes)</label><input type="number" id="calc-total" min="10" max="600" inputmode="numeric"></div>
+          <div><label for="calc-reserve">Reading and checking (minutes)</label><input type="number" id="calc-reserve" min="0" max="120" inputmode="numeric"></div>
+          <div><label for="calc-marks">Total marks</label><input type="number" id="calc-marks" min="1" max="500" inputmode="numeric"></div>
+        </div>
+        <p class="calc-out" id="calc-out" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Structuring your answers</h3>
+      <div class="grid grid-2">
+        <div>
+          <h4>Short answers (1 to 4 marks)</h4>
+          <ul>
+            <li>Make one clear point per mark available.</li>
+            <li>Use correct technical terms rather than everyday language.</li>
+            <li>Do not repeat the question back to the examiner.</li>
+          </ul>
+          <h4>Calculation questions</h4>
+          <ul>
+            <li>Write the formula first, then substitute the figures.</li>
+            <li>Show every step of your workings: method marks are often available.</li>
+            <li>Include units (£, %, units) and check your answer is sensible.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Extended answers: PEEL</h4>
+          <ul>
+            <li><strong>Point:</strong> make a clear, relevant statement.</li>
+            <li><strong>Evidence or example:</strong> support it with an example, ideally from the scenario.</li>
+            <li><strong>Explain:</strong> show why or how it matters, using "because" or "which means that".</li>
+            <li><strong>Link:</strong> connect back to the question.</li>
+          </ul>
+          <p>For <em>evaluate</em>, <em>assess</em> and <em>discuss</em> questions, consider advantages and disadvantages for the business in the scenario, then finish with a justified conclusion that makes a judgement. Extended responses are often marked in levels, so balanced, applied reasoning with a clear conclusion is what moves an answer into the top level.</p>
+        </div>
+      </div>
+      <div class="note" style="margin:8px 0 0">
+        <strong>Worked example.</strong> "Explain one benefit to Brightway Office Supplies of producing a cash flow forecast. (2 marks)"<br>
+        <em>A strong answer:</em> The forecast shows Brightway in advance which months it may run short of cash (1), which means it can arrange an overdraft or delay spending before it is unable to pay its suppliers (1).
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       6. REVISION PLANNER (saved in localStorage)
+       =================================================================== -->
+  <section class="panel" id="panel-planner" role="tabpanel" aria-labelledby="tab-planner" tabindex="0" hidden>
+    <h2>Revision planner</h2>
+    <p class="panel-intro">Rate your confidence for each topic and set a date to revise it. Prioritise red topics first, then amber. Your entries save automatically in this browser on this device.</p>
+    <div class="card">
+      <div class="rag-summary" id="rag-summary" aria-live="polite"></div>
+      <p class="muted" id="planner-advice" style="margin:0"></p>
+    </div>
+    <div class="card">
+      <table class="planner" id="planner-table">
+        <caption class="visually-hidden">Revision planner: confidence rating, revision date and notes for each topic</caption>
+        <thead>
+          <tr><th scope="col">Topic</th><th scope="col">Confidence</th><th scope="col">Revision date</th><th scope="col">Notes or actions</th></tr>
+        </thead>
+        <tbody id="planner-body"></tbody>
+      </table>
+      <div class="toolbar" style="margin:16px 0 0">
+        <button type="button" class="btn secondary" id="planner-clear">Clear planner</button>
+        <span class="status-msg" id="planner-status" role="status"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================
+       7. SELF-ASSESSMENT CHECKLIST (saved in localStorage)
+       =================================================================== -->
+  <section class="panel" id="panel-checklist" role="tabpanel" aria-labelledby="tab-checklist" tabindex="0" hidden>
+    <h2>Self-assessment checklist</h2>
+    <p class="panel-intro">Tick each learning outcome only when you could confidently demonstrate it in the exam without notes. Be honest: this checklist is for you.</p>
+    <div class="card">
+      <p style="margin:0 0 8px"><strong id="check-progress-text">0 of 0 outcomes achieved (0%)</strong></p>
+      <div class="progress" role="progressbar" id="check-progressbar" aria-label="Self-assessment progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-fill" id="check-progress-fill"></div>
+      </div>
+    </div>
+    <div class="card">
+      <form id="checklist-form" onsubmit="return false"></form>
+      <div class="toolbar" style="margin:6px 0 0">
+        <button type="button" class="btn secondary" id="checklist-reset">Untick all</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+'use strict';
+
+/* =======================================================================
+   EDITABLE CONTENT
+   Lecturers: update CONFIG, TOPICS, FLASHCARDS, QUIZ_QUESTIONS,
+   CHECKLIST and COMMAND_WORDS below. The page builds itself from them.
+   Topic ids link everything together, so keep them consistent.
+   ======================================================================= */
+
+/* ---------- Exam configuration ---------- */
+const CONFIG = {
+  examDate: '2027-01-12T09:00:00',   // Local date and time of the first core exam (YYYY-MM-DDTHH:MM:SS)
+  details: [                          // Shown on the Home tab as label and value pairs
+    ['Papers', 'Two written core exams: Paper 1 and Paper 2'],
+    ['Duration', '2 hours 30 minutes for each paper'],
+    ['Paper 1 covers', 'Business context, People, Business behaviours'],
+    ['Paper 2 covers', 'Quality and compliance, Finance, Policies and procedures, Project and change management'],
+    ['Question types', 'Short answer, structured and extended response questions, many based on a business scenario'],
+    ['Bring', 'Your student ID, black pens and a calculator. Check with your teacher exactly what is allowed.']
+  ],
+  calculator: { total: 150, reserve: 15, marks: 100 }, // Default values for the time per mark calculator: update the marks to match your paper
+  storagePrefix: 'erh-tl-'            // Keeps this hub's saved data separate from other revision hubs
+};
+
+/* ---------- Topics and summaries ----------
+   keyPoints and definition text may contain simple HTML such as <strong>.
+   example.code is shown exactly as written; example.html is inserted as HTML. */
+const TOPICS = [
+  {
+    id: 'context',
+    title: 'Business context',
+    intro: 'Assessed in Paper 1. Every organisation operates within a context: its legal form, its sector, its aims and the external environment all shape the decisions its managers make.',
+    keyPoints: [
+      'Common <strong>legal structures</strong>: sole trader, partnership, private limited company (Ltd), public limited company (plc), social enterprise and charity. Public sector organisations are owned and funded by the government.',
+      'Sole traders and ordinary partnerships have <strong>unlimited liability</strong>: the owners can lose personal assets. Shareholders in Ltd and plc companies have <strong>limited liability</strong>.',
+      'Businesses operate in the <strong>primary</strong> (extracting raw materials), <strong>secondary</strong> (manufacturing and construction) and <strong>tertiary</strong> (services) sectors.',
+      'A <strong>mission statement</strong> sets out the purpose of the organisation. <strong>Aims</strong> are long-term goals, and <strong>objectives</strong> are specific, measurable steps towards them, ideally <strong>SMART</strong>.',
+      '<strong>Organisational structures</strong> include hierarchical (tall), flat, matrix, functional and geographical. Key terms are <strong>span of control</strong>, <strong>chain of command</strong> and <strong>delegation</strong>.',
+      '<strong>PESTLE</strong> analysis examines external factors: political, economic, social, technological, legal and environmental. <strong>SWOT</strong> analysis combines internal strengths and weaknesses with external opportunities and threats.',
+      '<strong>Stakeholders</strong> are individuals or groups affected by, or able to affect, the business. They can be internal (employees, managers, owners) or external (customers, suppliers, the local community, government).'
+    ],
+    definitions: [
+      ['SMART objective', 'An objective that is specific, measurable, achievable, relevant and time-bound.'],
+      ['Span of control', 'The number of employees who report directly to one manager.'],
+      ['Stakeholder mapping', 'Plotting stakeholders by their power and interest (for example, Mendelow\'s matrix) to decide how closely to manage each group.'],
+      ['Private and public sector', 'Private sector organisations are owned by individuals or shareholders; public sector organisations are owned and run by central or local government.']
+    ],
+    example: {
+      title: 'Worked example: rewriting an objective and applying PESTLE',
+      text: 'A local office supplies company has the objective "We want to grow". This is too vague to measure.',
+      code: '',
+      html: '<p><strong>SMART version:</strong> "Increase online sales revenue by 15% compared with last year by 31 December, by launching a next-day delivery service in March."</p><div class="table-wrap"><table class="data"><caption class="visually-hidden">PESTLE factors for an office supplies company</caption><thead><tr><th scope="col">PESTLE factor</th><th scope="col">Example for this business</th></tr></thead><tbody><tr><td>Political</td><td>Changes to business rates or government support for small firms</td></tr><tr><td>Economic</td><td>Rising interest rates reduce customers\' spending on new equipment</td></tr><tr><td>Social</td><td>More hybrid working creates demand for home office products</td></tr><tr><td>Technological</td><td>Online ordering and paperless offices reduce demand for paper</td></tr><tr><td>Legal</td><td>Consumer protection law on returns and refunds for online sales</td></tr><tr><td>Environmental</td><td>Customers expect recycled products and reduced packaging</td></tr></tbody></table></div><p><strong>Exam tip:</strong> always apply each factor to the business in the scenario rather than giving a general definition.</p>'
+    }
+  },
+  {
+    id: 'people',
+    title: 'People',
+    intro: 'Assessed in Paper 1. People are an organisation\'s most important resource. Managers must recruit, develop, motivate and lead them effectively.',
+    keyPoints: [
+      'The <strong>recruitment process</strong>: identify the vacancy, write a job description and person specification, advertise (internally or externally), shortlist, interview or assess, select, make an offer and carry out checks.',
+      '<strong>Internal recruitment</strong> is quicker, cheaper and motivating, but brings no new ideas. <strong>External recruitment</strong> brings a wider pool of talent and fresh ideas, but costs more and takes longer.',
+      '<strong>Induction</strong> introduces new staff to the organisation, its policies and their role. <strong>Training</strong> can be on the job (learning while working) or off the job (courses away from the workstation).',
+      '<strong>Maslow\'s hierarchy of needs</strong>: physiological, safety, love and belonging, esteem, self-actualisation. <strong>Herzberg</strong> separated hygiene factors (such as pay and working conditions), which prevent dissatisfaction, from motivators (such as recognition and responsibility), which create satisfaction.',
+      '<strong>Leadership styles</strong> include autocratic (the leader decides), democratic (the team is consulted) and laissez-faire (the team decides with little direction). The best style depends on the situation and the team.',
+      '<strong>Tuckman\'s stages</strong> of team development: forming, storming, norming, performing and adjourning.',
+      '<strong>Performance management</strong> uses objectives, regular feedback and appraisals to review performance and identify development needs.',
+      'Common <strong>employment contracts</strong> include permanent, fixed-term, part-time and zero-hours.'
+    ],
+    definitions: [
+      ['Job description', 'A document setting out the title, duties, responsibilities and reporting lines of a job.'],
+      ['Person specification', 'A document listing the essential and desirable skills, qualifications, experience and qualities needed for the job.'],
+      ['Appraisal', 'A formal, regular meeting to review an employee\'s performance against objectives and agree development and new targets.'],
+      ['Continuing professional development (CPD)', 'Ongoing learning that keeps an employee\'s skills and knowledge up to date throughout their career.']
+    ],
+    example: {
+      title: 'Worked example: applying Tuckman to a new team',
+      text: 'A manager has formed a new team of five administrators to run a new customer enquiries service.',
+      code: '',
+      html: '<div class="table-wrap"><table class="data"><caption class="visually-hidden">Tuckman stages with the manager\'s actions</caption><thead><tr><th scope="col">Stage</th><th scope="col">What the team is like</th><th scope="col">What the manager should do</th></tr></thead><tbody><tr><td>Forming</td><td>Polite, unsure of roles</td><td>Give clear direction, roles and objectives</td></tr><tr><td>Storming</td><td>Disagreements over tasks and working methods</td><td>Manage conflict and coach the team</td></tr><tr><td>Norming</td><td>Agreed ways of working, growing trust</td><td>Support and encourage more responsibility</td></tr><tr><td>Performing</td><td>Motivated and working independently</td><td>Delegate and focus on development</td></tr><tr><td>Adjourning</td><td>Task complete, team disbands</td><td>Recognise achievements and review lessons learned</td></tr></tbody></table></div><p>Notice how the leadership style moves from more directive (autocratic) towards more delegating as the team matures.</p>'
+    }
+  },
+  {
+    id: 'behaviours',
+    title: 'Business behaviours',
+    intro: 'Assessed in Paper 1. How an organisation and its people behave affects its reputation, its relationships with stakeholders and its long-term success.',
+    keyPoints: [
+      '<strong>Professional behaviours</strong> include reliability, punctuality, integrity, respect, confidentiality, taking responsibility and a positive attitude to feedback.',
+      '<strong>Business ethics</strong> means acting in a way that is morally right, not just legal. Ethical decisions may increase costs in the short term but protect reputation and trust.',
+      '<strong>Corporate social responsibility</strong> (CSR) is a business taking responsibility for its impact on society and the environment, for example through fair trade, reducing emissions or supporting the local community.',
+      'The <strong>Equality Act 2010</strong> protects people from discrimination on the basis of nine <strong>protected characteristics</strong>: age, disability, gender reassignment, marriage and civil partnership, pregnancy and maternity, race, religion or belief, sex, and sexual orientation.',
+      '<strong>Equality, diversity and inclusion</strong> (EDI) benefits a business through a wider range of ideas, a larger recruitment pool, better understanding of customers and improved staff retention.',
+      'Communication can be verbal, written, non-verbal or digital, and formal or informal. <strong>Barriers</strong> include jargon, noise, distractions, cultural differences, information overload and the wrong choice of channel.',
+      'Excellent <strong>customer service</strong> builds loyalty and reputation. Complaints should be acknowledged quickly, listened to, investigated, resolved and followed up.'
+    ],
+    definitions: [
+      ['Integrity', 'Being honest and having strong moral principles, even when no one is watching.'],
+      ['Direct discrimination', 'Treating someone less favourably than others because of a protected characteristic.'],
+      ['Reasonable adjustment', 'A change an employer must make so that a disabled person is not at a substantial disadvantage, for example adapted equipment or flexible hours.'],
+      ['Whistleblowing', 'Reporting wrongdoing within an organisation, such as fraud or danger to health and safety. Whistleblowers are protected by law.']
+    ],
+    example: {
+      title: 'Worked example: overcoming barriers to communication',
+      text: 'Staff in a busy finance office keep missing important updates about a new expenses process.',
+      code: '',
+      html: '<div class="table-wrap"><table class="data"><caption class="visually-hidden">Communication barriers and solutions</caption><thead><tr><th scope="col">Barrier</th><th scope="col">Effect</th><th scope="col">Solution</th></tr></thead><tbody><tr><td>Information overload: dozens of emails a day</td><td>Key messages are missed</td><td>Use a clear subject line and summarise actions at the top</td></tr><tr><td>Jargon in the guidance</td><td>Staff misunderstand the process</td><td>Use plain English and a short step-by-step guide</td></tr><tr><td>Hybrid working</td><td>Remote staff miss team briefings</td><td>Record briefings and use the team\'s messaging channel</td></tr><tr><td>No chance to ask questions</td><td>Errors on expense claims</td><td>Hold a short question and answer session and check understanding</td></tr></tbody></table></div>'
+    }
+  },
+  {
+    id: 'quality',
+    title: 'Quality and compliance',
+    intro: 'Assessed in Paper 2. Organisations must meet the standards their customers expect and comply with the laws and regulations that apply to them.',
+    keyPoints: [
+      '<strong>Quality control</strong> checks products or services after they are made to find defects. <strong>Quality assurance</strong> builds quality into every stage of the process to prevent defects.',
+      '<strong>Total quality management</strong> (TQM) is a culture where every employee is responsible for quality and focused on meeting customer needs.',
+      '<strong>Continuous improvement</strong> (Kaizen) makes small, regular improvements. The <strong>Plan, Do, Check, Act</strong> (PDCA) cycle is a common model for this.',
+      '<strong>ISO 9001</strong> is an international standard for quality management systems. Certification shows customers that a business follows consistent, audited processes.',
+      '<strong>Audits</strong> check that processes and records meet required standards. They can be internal (by the organisation\'s own staff) or external (by an independent body).',
+      '<strong>Key performance indicators</strong> (KPIs) measure performance against targets, for example complaint numbers, error rates or response times. <strong>Benchmarking</strong> compares performance with competitors or best practice.',
+      'The <strong>Health and Safety at Work etc. Act 1974</strong> places duties on employers and employees. Employers must carry out <strong>risk assessments</strong>: identify hazards, decide who might be harmed and how, evaluate the risks and decide on precautions, record the findings and implement them, then review and update.',
+      'Non-compliance can lead to fines, legal action, loss of licences, reputational damage and loss of customers. Regulators include the Health and Safety Executive (HSE) and the Information Commissioner\'s Office (ICO).'
+    ],
+    definitions: [
+      ['Compliance', 'Meeting the requirements of laws, regulations, standards and internal policies.'],
+      ['Hazard and risk', 'A hazard is anything with the potential to cause harm; a risk is the likelihood that harm will occur and how serious it would be.'],
+      ['Benchmarking', 'Comparing an organisation\'s processes and performance with those of the best in the industry to identify improvements.'],
+      ['Audit trail', 'A record that shows who did what and when, allowing actions and decisions to be checked.']
+    ],
+    example: {
+      title: 'Worked example: PDCA to reduce invoice errors',
+      text: 'An accounts team finds that 8% of invoices sent last month contained errors, leading to late payments.',
+      code: '',
+      html: '<div class="table-wrap"><table class="data"><caption class="visually-hidden">Plan, Do, Check, Act applied to invoice errors</caption><thead><tr><th scope="col">Stage</th><th scope="col">Action</th></tr></thead><tbody><tr><td>Plan</td><td>Analyse the errors: most are wrong purchase order numbers. Set a target to cut errors to 2% within three months.</td></tr><tr><td>Do</td><td>Trial a checklist and a second check on invoices over £1,000 for one month.</td></tr><tr><td>Check</td><td>Measure the error rate (a KPI). It falls to 3%.</td></tr><tr><td>Act</td><td>Adopt the checklist as standard, update the procedure, train all staff, then start the cycle again.</td></tr></tbody></table></div>'
+    }
+  },
+  {
+    id: 'finance',
+    title: 'Finance',
+    intro: 'Assessed in Paper 2. Managers and administrators need to understand, record and use financial information to plan and control the business. Expect calculation questions.',
+    keyPoints: [
+      '<strong>Revenue</strong> = selling price × quantity sold. <strong>Total costs</strong> = fixed costs + variable costs. <strong>Profit</strong> = revenue minus total costs.',
+      '<strong>Fixed costs</strong> (such as rent and salaries) do not change with output. <strong>Variable costs</strong> (such as raw materials) change directly with output.',
+      '<strong>Break-even point</strong> (units) = fixed costs ÷ (selling price per unit minus variable cost per unit). The bottom part of the formula is the <strong>contribution per unit</strong>.',
+      'A <strong>cash flow forecast</strong> predicts cash coming in and going out. Net cash flow = inflows minus outflows; closing balance = opening balance + net cash flow, and becomes the next month\'s opening balance.',
+      'A <strong>budget</strong> is a financial plan. A <strong>variance</strong> is the difference between budgeted and actual figures: favourable if it improves profit, adverse if it reduces profit.',
+      'The <strong>income statement</strong> (profit and loss account) shows revenue, costs and profit over a period. The <strong>statement of financial position</strong> (balance sheet) shows assets, liabilities and capital at a point in time.',
+      '<strong>Gross profit margin</strong> = (gross profit ÷ revenue) × 100. <strong>Net profit margin</strong> = (net profit ÷ revenue) × 100.',
+      '<strong>Sources of finance</strong>: internal (retained profit, selling assets) and external (bank loans, overdrafts, share capital, leasing, trade credit, grants).'
+    ],
+    definitions: [
+      ['Cash flow and profit', 'Cash flow is the movement of money in and out of the business; profit is revenue minus costs. A profitable business can still fail if it runs out of cash.'],
+      ['Overdraft', 'A flexible, short-term facility allowing a business to take more out of its bank account than it holds, up to an agreed limit.'],
+      ['Purchase invoice and sales invoice', 'A purchase invoice is received from a supplier for goods bought; a sales invoice is sent to a customer requesting payment.'],
+      ['Margin of safety', 'The amount by which actual or planned sales exceed the break-even level of sales.']
+    ],
+    example: {
+      title: 'Worked example: break-even calculation',
+      text: 'A training company runs workshops. Fixed costs are £12,000 a year. It charges £25 per delegate, and the variable cost per delegate (materials and refreshments) is £10. It expects 1,000 delegates this year.',
+      code: '',
+      html: '<div class="table-wrap"><table class="data"><caption class="visually-hidden">Break-even calculation steps</caption><thead><tr><th scope="col">Step</th><th scope="col">Working</th><th scope="col">Answer</th></tr></thead><tbody><tr><td>1. Contribution per unit</td><td>£25 minus £10</td><td>£15</td></tr><tr><td>2. Break-even point</td><td>£12,000 ÷ £15</td><td>800 delegates</td></tr><tr><td>3. Margin of safety</td><td>1,000 minus 800</td><td>200 delegates</td></tr><tr><td>4. Profit at 1,000 delegates</td><td>(1,000 × £15) minus £12,000</td><td>£3,000</td></tr></tbody></table></div><p><strong>Exam tip:</strong> always show your formula and workings, and include units (£ or delegates). Method marks are often available even if the final answer is wrong.</p>'
+    }
+  },
+  {
+    id: 'policies',
+    title: 'Policies and procedures',
+    intro: 'Assessed in Paper 2. Policies and procedures turn legal requirements and organisational values into clear, consistent ways of working.',
+    keyPoints: [
+      'A <strong>policy</strong> states the organisation\'s position and rules on an issue (the "what" and "why"). A <strong>procedure</strong> sets out the steps to follow to put the policy into practice (the "how").',
+      'Policies ensure <strong>consistency</strong>, support <strong>legal compliance</strong>, set expectations, protect staff and customers and reduce risk.',
+      'Common policies include health and safety, data protection, equality and diversity, disciplinary, grievance, whistleblowing, IT acceptable use, expenses and safeguarding.',
+      '<strong>UK GDPR</strong> and the <strong>Data Protection Act 2018</strong> require personal data to be processed lawfully, fairly and transparently; collected for specified purposes; adequate and limited to what is necessary; accurate; kept no longer than necessary; and kept secure. The organisation must be able to show it complies (accountability).',
+      'A <strong>disciplinary procedure</strong> deals with an employee\'s conduct or performance. A <strong>grievance procedure</strong> allows an employee to raise a complaint about their work or treatment. The Acas Code of Practice sets out fair steps for both.',
+      'Policies should follow a <strong>life cycle</strong>: identify the need, research and draft, consult stakeholders, approve, communicate and train, implement, then monitor and review.',
+      '<strong>Document control</strong> (version numbers, owners, approval and review dates) makes sure staff always use the current version.'
+    ],
+    definitions: [
+      ['Personal data', 'Any information relating to an identified or identifiable living person, such as a name, email address or ID number.'],
+      ['Data breach', 'A security incident that leads to the accidental or unlawful loss, alteration, disclosure of, or access to, personal data.'],
+      ['Standard operating procedure (SOP)', 'Step-by-step written instructions for carrying out a routine task in the same way every time.'],
+      ['Consultation', 'Seeking the views of people affected, such as staff or trade union representatives, before a policy is finalised.']
+    ],
+    example: {
+      title: 'Worked example: from policy to procedure',
+      text: 'A company\'s data protection policy states: "Personal data will be kept secure and only shared with people who need it."',
+      code: '',
+      html: '<p>A matching <strong>procedure for emailing personal data</strong> might be:</p><ol class="steps"><li>Check that the recipient needs the data and is authorised to receive it.</li><li>Send only the minimum data necessary.</li><li>Password-protect the attachment and send the password separately.</li><li>Double-check the recipient\'s email address before sending.</li><li>If data is sent to the wrong person, report it to the data protection lead immediately.</li></ol><p>Each step links back to a data protection principle: data minimisation, security and accountability. Serious breaches may need to be reported to the ICO within 72 hours.</p>'
+    }
+  },
+  {
+    id: 'projects',
+    title: 'Project and change management',
+    intro: 'Assessed in Paper 2. Projects deliver change. Managing them well means controlling time, cost and quality, and bringing people with you.',
+    keyPoints: [
+      'A <strong>project</strong> is a temporary piece of work with a defined start and end, a specific objective and its own resources.',
+      'The <strong>project life cycle</strong>: initiation, planning, execution, monitoring and control, and closure.',
+      'The <strong>triple constraint</strong> links time, cost and scope (quality). Changing one usually affects the others.',
+      'Planning tools include <strong>Gantt charts</strong> (showing tasks against time), <strong>critical path analysis</strong> (finding the longest sequence of dependent tasks), milestones and work breakdown structures.',
+      'A <strong>risk register</strong> records each risk, its likelihood and impact (often scored 1 to 5 and multiplied), the owner and the mitigation.',
+      'Project approaches include <strong>Waterfall</strong> (sequential stages), <strong>Agile</strong> (short, flexible iterations) and <strong>PRINCE2</strong> (a structured method based on stages and clear roles).',
+      '<strong>Lewin\'s change model</strong>: unfreeze (explain why change is needed), change (implement it with support), refreeze (embed the new way of working).',
+      'People <strong>resist change</strong> because of fear of the unknown, job insecurity, loss of status, poor communication or lack of skills. Overcome it through communication, involvement, training and support.'
+    ],
+    definitions: [
+      ['Scope creep', 'Uncontrolled growth in a project\'s scope after it has started, often causing delays and overspending.'],
+      ['Milestone', 'A significant point or event in a project, used to check progress.'],
+      ['Critical path', 'The longest sequence of dependent tasks. Any delay to a task on the critical path delays the whole project.'],
+      ['Project closure', 'Formally ending the project: handing over deliverables, releasing resources and recording lessons learned.']
+    ],
+    example: {
+      title: 'Worked example: scoring a risk register',
+      text: 'A company is moving its office to a new building. Risks are scored as likelihood (1 to 5) × impact (1 to 5).',
+      code: '',
+      html: '<div class="table-wrap"><table class="data"><caption class="visually-hidden">Risk register for an office move</caption><thead><tr><th scope="col">Risk</th><th scope="col">Likelihood</th><th scope="col">Impact</th><th scope="col">Score</th><th scope="col">Mitigation</th></tr></thead><tbody><tr><td>IT network not ready on moving day</td><td>3</td><td>5</td><td>15 (high)</td><td>Test the network one week before; keep the old office available for two days</td></tr><tr><td>Staff resist the new open-plan layout</td><td>4</td><td>3</td><td>12 (high)</td><td>Consult staff on the layout and provide quiet rooms</td></tr><tr><td>Removal firm cancels</td><td>2</td><td>4</td><td>8 (medium)</td><td>Use a contract with a cancellation clause and identify a back-up firm</td></tr><tr><td>Minor damage to furniture</td><td>3</td><td>1</td><td>3 (low)</td><td>Accept the risk; check insurance cover</td></tr></tbody></table></div><p>The highest scores are dealt with first. Note that the second risk is a people risk: managing change is part of managing the project.</p>'
+    }
+  }
+];
+
+/* ---------- Flashcards (at least 10 per topic) ---------- */
+const FLASHCARDS = [
+  // Business context
+  { topic: 'context', front: 'Limited liability', back: 'Owners (shareholders) can only lose the money they have invested, not their personal possessions, if the business fails.' },
+  { topic: 'context', front: 'Unlimited liability', back: 'The owners are personally responsible for all the business\'s debts, so their personal assets are at risk. Applies to sole traders and ordinary partnerships.' },
+  { topic: 'context', front: 'Private limited company (Ltd) compared with public limited company (plc)', back: 'Both have limited liability. A plc can sell shares to the public on a stock exchange; an Ltd cannot offer shares to the general public.' },
+  { topic: 'context', front: 'Social enterprise', back: 'A business with mainly social or environmental aims that reinvests most of its profits into that purpose.' },
+  { topic: 'context', front: 'Primary, secondary and tertiary sectors', back: 'Primary extracts raw materials (farming, mining); secondary makes goods (manufacturing, construction); tertiary provides services (retail, banking, administration).' },
+  { topic: 'context', front: 'SMART objectives', back: 'Specific, measurable, achievable, relevant and time-bound.' },
+  { topic: 'context', front: 'Mission statement', back: 'A short statement of an organisation\'s purpose and values, communicating what it exists to do.' },
+  { topic: 'context', front: 'Span of control', back: 'The number of people who report directly to one manager. Flat structures have wide spans; tall structures have narrow spans.' },
+  { topic: 'context', front: 'Chain of command', back: 'The line of authority through which instructions pass down and information passes up an organisation.' },
+  { topic: 'context', front: 'PESTLE', back: 'Political, economic, social, technological, legal and environmental factors in the external environment.' },
+  { topic: 'context', front: 'SWOT', back: 'Strengths and weaknesses (internal) and opportunities and threats (external).' },
+
+  // People
+  { topic: 'people', front: 'Job description compared with person specification', back: 'A job description describes the job (duties, responsibilities); a person specification describes the ideal person (skills, qualifications, qualities).' },
+  { topic: 'people', front: 'Internal recruitment: one advantage and one disadvantage', back: 'Advantage: quicker and cheaper, and the candidate already knows the business. Disadvantage: no new ideas, and it creates another vacancy.' },
+  { topic: 'people', front: 'Induction', back: 'Training that introduces a new employee to the organisation, its people, policies, health and safety and their role.' },
+  { topic: 'people', front: 'On-the-job compared with off-the-job training', back: 'On-the-job training happens while doing the job (for example, shadowing); off-the-job training happens away from the workplace (for example, a college course).' },
+  { topic: 'people', front: 'Maslow\'s hierarchy of needs (lowest to highest)', back: 'Physiological, safety, love and belonging, esteem, self-actualisation.' },
+  { topic: 'people', front: 'Herzberg\'s hygiene factors and motivators', back: 'Hygiene factors (pay, conditions, policies) prevent dissatisfaction; motivators (recognition, responsibility, achievement) create satisfaction.' },
+  { topic: 'people', front: 'Autocratic leadership', back: 'The leader makes decisions alone with little input from staff. Useful in a crisis, but can demotivate skilled staff.' },
+  { topic: 'people', front: 'Democratic leadership', back: 'The leader involves the team in decisions. Improves motivation and ideas, but decisions can take longer.' },
+  { topic: 'people', front: 'Tuckman\'s stages of team development', back: 'Forming, storming, norming, performing, adjourning.' },
+  { topic: 'people', front: 'Appraisal', back: 'A formal review of an employee\'s performance against objectives, used to give feedback and agree training and new targets.' },
+  { topic: 'people', front: 'Zero-hours contract', back: 'A contract where the employer does not guarantee any minimum hours and the worker is paid only for hours worked.' },
+
+  // Business behaviours
+  { topic: 'behaviours', front: 'Business ethics', back: 'Moral principles that guide how a business behaves, doing what is right rather than only what is legal or profitable.' },
+  { topic: 'behaviours', front: 'Corporate social responsibility (CSR)', back: 'A business taking responsibility for its impact on society, the environment and its stakeholders.' },
+  { topic: 'behaviours', front: 'Equality Act 2010', back: 'The UK law that protects people from discrimination, harassment and victimisation because of a protected characteristic.' },
+  { topic: 'behaviours', front: 'The nine protected characteristics', back: 'Age, disability, gender reassignment, marriage and civil partnership, pregnancy and maternity, race, religion or belief, sex, sexual orientation.' },
+  { topic: 'behaviours', front: 'Equality compared with equity', back: 'Equality means treating everyone the same; equity means giving people what they need to have a fair outcome.' },
+  { topic: 'behaviours', front: 'Inclusion', back: 'Creating an environment where everyone feels valued, respected and able to contribute fully.' },
+  { topic: 'behaviours', front: 'Reasonable adjustment', back: 'A change an employer makes so that a disabled person is not disadvantaged, such as adapted equipment or changed working hours.' },
+  { topic: 'behaviours', front: 'Barriers to communication (give four)', back: 'Jargon, noise and distractions, information overload, cultural or language differences, the wrong channel, poor listening.' },
+  { topic: 'behaviours', front: 'Formal compared with informal communication', back: 'Formal communication follows official channels (reports, meetings, letters); informal communication happens casually between colleagues.' },
+  { topic: 'behaviours', front: 'Whistleblowing', back: 'Reporting wrongdoing in an organisation, such as fraud or safety risks. Whistleblowers are legally protected from unfair treatment.' },
+  { topic: 'behaviours', front: 'Confidentiality', back: 'Keeping sensitive information private and sharing it only with people who are authorised and need to know.' },
+
+  // Quality and compliance
+  { topic: 'quality', front: 'Quality control compared with quality assurance', back: 'Quality control inspects the finished product to find defects; quality assurance builds quality into each stage to prevent defects.' },
+  { topic: 'quality', front: 'Total quality management (TQM)', back: 'An approach where every employee takes responsibility for quality and focuses on meeting customer needs.' },
+  { topic: 'quality', front: 'Kaizen', back: 'Continuous improvement through small, regular changes suggested by employees at all levels.' },
+  { topic: 'quality', front: 'PDCA cycle', back: 'Plan, Do, Check, Act: a repeating cycle for testing and embedding improvements.' },
+  { topic: 'quality', front: 'ISO 9001', back: 'An international standard for quality management systems, awarded after an external audit.' },
+  { topic: 'quality', front: 'Internal compared with external audit', back: 'An internal audit is carried out by the organisation\'s own staff; an external audit is carried out by an independent body.' },
+  { topic: 'quality', front: 'Key performance indicator (KPI)', back: 'A measurable value that shows how well an organisation is achieving a key objective, for example average call waiting time.' },
+  { topic: 'quality', front: 'Benchmarking', back: 'Comparing performance and processes with the best in the industry to identify improvements.' },
+  { topic: 'quality', front: 'Five steps of a risk assessment', back: 'Identify the hazards; decide who might be harmed and how; evaluate the risks and decide on precautions; record and implement findings; review and update.' },
+  { topic: 'quality', front: 'Health and Safety at Work etc. Act 1974', back: 'The main UK health and safety law. It places duties on employers to protect staff and others, and on employees to take reasonable care.' },
+  { topic: 'quality', front: 'Consequences of non-compliance', back: 'Fines, legal action, loss of licences or certification, reputational damage, loss of customers and harm to people.' },
+
+  // Finance
+  { topic: 'finance', front: 'Revenue formula', back: 'Revenue = selling price × quantity sold.' },
+  { topic: 'finance', front: 'Fixed costs compared with variable costs', back: 'Fixed costs stay the same whatever the output (rent); variable costs change directly with output (materials).' },
+  { topic: 'finance', front: 'Break-even formula', back: 'Break-even point (units) = fixed costs ÷ (selling price per unit minus variable cost per unit).' },
+  { topic: 'finance', front: 'Contribution per unit', back: 'Selling price per unit minus variable cost per unit. It contributes towards fixed costs and then profit.' },
+  { topic: 'finance', front: 'Cash flow forecast: closing balance', back: 'Closing balance = opening balance + net cash flow (inflows minus outflows). It becomes the next month\'s opening balance.' },
+  { topic: 'finance', front: 'Favourable compared with adverse variance', back: 'Favourable: actual results are better for profit than budgeted. Adverse: actual results are worse for profit than budgeted.' },
+  { topic: 'finance', front: 'Gross profit margin', back: '(Gross profit ÷ revenue) × 100.' },
+  { topic: 'finance', front: 'Net profit margin', back: '(Net profit ÷ revenue) × 100.' },
+  { topic: 'finance', front: 'Income statement compared with statement of financial position', back: 'The income statement shows profit or loss over a period; the statement of financial position shows assets, liabilities and capital at one point in time.' },
+  { topic: 'finance', front: 'Internal sources of finance', back: 'Retained profit and the sale of assets.' },
+  { topic: 'finance', front: 'Overdraft compared with bank loan', back: 'An overdraft is flexible, short-term borrowing for cash flow; a loan is a fixed sum repaid in instalments, usually for long-term investment.' },
+
+  // Policies and procedures
+  { topic: 'policies', front: 'Policy compared with procedure', back: 'A policy states what the organisation will do and why; a procedure sets out the steps for how to do it.' },
+  { topic: 'policies', front: 'Why organisations need policies (give three reasons)', back: 'Consistency, legal compliance, clear expectations, protecting staff and customers, reducing risk.' },
+  { topic: 'policies', front: 'Data protection principles', back: 'Lawfulness, fairness and transparency; purpose limitation; data minimisation; accuracy; storage limitation; integrity and confidentiality (security); accountability.' },
+  { topic: 'policies', front: 'Personal data', back: 'Any information that can identify a living person, directly or indirectly, such as a name, address or email.' },
+  { topic: 'policies', front: 'Information Commissioner\'s Office (ICO)', back: 'The UK regulator for data protection. Serious data breaches must normally be reported to it within 72 hours.' },
+  { topic: 'policies', front: 'Disciplinary procedure', back: 'The formal process used when an employee\'s conduct or performance falls below the required standard.' },
+  { topic: 'policies', front: 'Grievance procedure', back: 'The formal process an employee uses to raise a complaint or concern about their work, colleagues or treatment.' },
+  { topic: 'policies', front: 'Acas', back: 'The Advisory, Conciliation and Arbitration Service, which gives free advice and publishes the Code of Practice on disciplinary and grievance procedures.' },
+  { topic: 'policies', front: 'Stages in the policy life cycle', back: 'Identify the need, research and draft, consult, approve, communicate and train, implement, monitor and review.' },
+  { topic: 'policies', front: 'Document control', back: 'Managing version numbers, owners, approval and review dates so that only the current version of a document is used.' },
+  { topic: 'policies', front: 'Standard operating procedure (SOP)', back: 'Written step-by-step instructions for completing a routine task consistently.' },
+
+  // Project and change management
+  { topic: 'projects', front: 'Project', back: 'A temporary piece of work with a defined start and end, a specific objective and allocated resources.' },
+  { topic: 'projects', front: 'Project life cycle stages', back: 'Initiation, planning, execution, monitoring and control, closure.' },
+  { topic: 'projects', front: 'Triple constraint', back: 'Time, cost and scope (quality). A change to one usually affects the other two.' },
+  { topic: 'projects', front: 'Gantt chart', back: 'A bar chart showing project tasks against a timeline, including start and end dates, overlaps and progress.' },
+  { topic: 'projects', front: 'Critical path', back: 'The longest sequence of dependent tasks. A delay on the critical path delays the whole project.' },
+  { topic: 'projects', front: 'Risk register', back: 'A document recording each project risk, its likelihood, impact, score, owner and mitigation.' },
+  { topic: 'projects', front: 'Scope creep', back: 'Uncontrolled additions to a project\'s scope after it starts, often causing delays and overspending.' },
+  { topic: 'projects', front: 'Lewin\'s change model', back: 'Unfreeze (prepare for change), change (implement it), refreeze (embed it as the new normal).' },
+  { topic: 'projects', front: 'Reasons people resist change (give four)', back: 'Fear of the unknown, job insecurity, loss of status, poor communication, lack of skills, comfort with current ways.' },
+  { topic: 'projects', front: 'Waterfall compared with Agile', back: 'Waterfall completes stages in sequence and suits fixed requirements; Agile works in short, flexible iterations and suits changing requirements.' },
+  { topic: 'projects', front: 'Lessons learned', back: 'A review at project closure recording what went well and what to improve, so future projects benefit.' }
+];
+
+/* ---------- Practice quiz questions ----------
+   answer is the index (starting at 0) of the correct option in the options list.
+   code is optional and is shown in a code block under the question. */
+const QUIZ_QUESTIONS = [
+  // Business context
+  { topic: 'context', question: 'Which type of business owner has unlimited liability?',
+    options: ['A shareholder in a plc', 'A sole trader', 'A shareholder in a private limited company', 'A government department'], answer: 1,
+    explanation: 'A sole trader and the business are legally the same, so the owner is personally responsible for all debts. Shareholders in Ltd and plc companies have limited liability.' },
+  { topic: 'context', question: 'Which of the following is a SMART objective?',
+    options: ['Become the best employer in the region', 'Improve customer service', 'Reduce staff absence from 6% to 4% by the end of July', 'Grow the business as quickly as possible'], answer: 2,
+    explanation: 'Only this option is specific, measurable (6% to 4%) and time-bound (end of July). The others are vague aims that cannot be measured.' },
+  { topic: 'context', question: 'A rise in interest rates would appear under which heading of a PESTLE analysis?',
+    options: ['Political', 'Economic', 'Social', 'Legal'], answer: 1,
+    explanation: 'Interest rates are an economic factor. They affect the cost of borrowing for businesses and how much customers are willing to spend.' },
+  { topic: 'context', question: 'An organisation removes two layers of middle management. What is the most likely effect?',
+    options: ['Managers\' spans of control become wider', 'The chain of command becomes longer', 'The structure becomes taller', 'Communication becomes slower'], answer: 0,
+    explanation: 'Removing layers creates a flatter structure. The remaining managers have more people reporting to them (a wider span of control), and communication is usually quicker.' },
+
+  // People
+  { topic: 'people', question: 'Which document lists the skills, qualifications and qualities needed by the ideal candidate?',
+    options: ['Job description', 'Person specification', 'Contract of employment', 'Job advertisement'], answer: 1,
+    explanation: 'The person specification describes the ideal person, usually as essential and desirable criteria. The job description describes the job itself.' },
+  { topic: 'people', question: 'According to Herzberg, which of the following is a motivator rather than a hygiene factor?',
+    options: ['Salary', 'Working conditions', 'Recognition for achievement', 'Company policies'], answer: 2,
+    explanation: 'Herzberg found that recognition, achievement and responsibility create satisfaction. Pay, conditions and policies are hygiene factors: they prevent dissatisfaction but do not motivate on their own.' },
+  { topic: 'people', question: 'A new team is arguing about roles and how work should be done. Which stage of Tuckman\'s model is it in?',
+    options: ['Forming', 'Storming', 'Norming', 'Performing'], answer: 1,
+    explanation: 'Storming is characterised by conflict as team members challenge each other and the way the team works. The manager should help resolve conflict and clarify roles.' },
+  { topic: 'people', question: 'Which leadership style is most suitable for a highly skilled, experienced team working on a creative task?',
+    options: ['Autocratic', 'Laissez-faire or democratic', 'Bureaucratic', 'None: skilled teams need no leadership'], answer: 1,
+    explanation: 'Skilled, motivated staff respond well to being trusted and involved. An autocratic style is better suited to emergencies or inexperienced teams.' },
+
+  // Business behaviours
+  { topic: 'behaviours', question: 'Which of the following is NOT one of the nine protected characteristics under the Equality Act 2010?',
+    options: ['Age', 'Religion or belief', 'Social class', 'Pregnancy and maternity'], answer: 2,
+    explanation: 'Social class is not a protected characteristic. The nine are age, disability, gender reassignment, marriage and civil partnership, pregnancy and maternity, race, religion or belief, sex, and sexual orientation.' },
+  { topic: 'behaviours', question: 'A business pays its suppliers a fair price and funds a local community project. This is an example of:',
+    options: ['Corporate social responsibility', 'Quality control', 'Benchmarking', 'Laissez-faire leadership'], answer: 0,
+    explanation: 'Corporate social responsibility means taking responsibility for the business\'s impact on stakeholders, society and the environment, beyond what the law requires.' },
+  { topic: 'behaviours', question: 'An employer provides a screen reader for a visually impaired employee. This is an example of:',
+    options: ['Positive discrimination', 'A reasonable adjustment', 'Direct discrimination', 'A grievance procedure'], answer: 1,
+    explanation: 'Under the Equality Act 2010, employers must make reasonable adjustments so that disabled employees are not at a substantial disadvantage.' },
+  { topic: 'behaviours', question: 'A manager sends a long email full of technical terms to new staff, who misunderstand it. Which barrier to communication is the main cause?',
+    options: ['Noise', 'Use of jargon', 'Cultural differences', 'Physical distance'], answer: 1,
+    explanation: 'Technical terms (jargon) that the audience does not understand prevent the message being received correctly. Plain English would overcome this barrier.' },
+
+  // Quality and compliance
+  { topic: 'quality', question: 'Which approach aims to prevent errors by building quality into every stage of a process?',
+    options: ['Quality control', 'Quality assurance', 'Final inspection', 'External audit'], answer: 1,
+    explanation: 'Quality assurance focuses on preventing defects through good processes. Quality control and final inspection detect defects after they have happened.' },
+  { topic: 'quality', question: 'What is the correct order of the PDCA cycle?',
+    options: ['Plan, Do, Check, Act', 'Prepare, Deliver, Control, Assess', 'Plan, Deliver, Check, Audit', 'Propose, Do, Correct, Act'], answer: 0,
+    explanation: 'PDCA stands for Plan, Do, Check, Act. After Act, the cycle starts again, supporting continuous improvement.' },
+  { topic: 'quality', question: 'Which organisation enforces health and safety law in most UK workplaces?',
+    options: ['The Information Commissioner\'s Office', 'The Health and Safety Executive', 'Acas', 'The Competition and Markets Authority'], answer: 1,
+    explanation: 'The Health and Safety Executive (HSE) regulates and enforces workplace health and safety, along with local authorities for some premises. The ICO regulates data protection.' },
+  { topic: 'quality', question: 'In a risk assessment, what is a hazard?',
+    options: ['The likelihood that someone will be harmed', 'Anything with the potential to cause harm', 'The action taken to reduce harm', 'A record of past accidents'], answer: 1,
+    explanation: 'A hazard is anything that could cause harm, such as a trailing cable. The risk is the chance of harm happening combined with how serious it would be.' },
+
+  // Finance
+  { topic: 'finance', question: 'A business has fixed costs of £20,000. It sells its product for £50 and the variable cost per unit is £30. What is the break-even point?',
+    options: ['400 units', '667 units', '1,000 units', '2,000 units'], answer: 2,
+    explanation: 'Contribution per unit = £50 minus £30 = £20. Break-even = £20,000 ÷ £20 = 1,000 units.' },
+  { topic: 'finance', question: 'A cash flow forecast shows an opening balance of £3,000, inflows of £8,000 and outflows of £12,500. What is the closing balance?',
+    options: ['£1,500', '-£1,500', '£4,500', '-£4,500'], answer: 1,
+    explanation: 'Net cash flow = £8,000 minus £12,500 = -£4,500. Closing balance = £3,000 + (-£4,500) = -£1,500. The business needs an overdraft or must act to improve cash flow.' },
+  { topic: 'finance', question: 'Revenue is £200,000 and gross profit is £80,000. What is the gross profit margin?',
+    options: ['25%', '40%', '60%', '250%'], answer: 1,
+    explanation: 'Gross profit margin = (£80,000 ÷ £200,000) × 100 = 40%.' },
+  { topic: 'finance', question: 'Actual spending on staff training was £4,000 against a budget of £5,000. How is this variance described?',
+    options: ['£1,000 adverse', '£1,000 favourable', '£9,000 favourable', 'There is no variance'], answer: 1,
+    explanation: 'Spending £1,000 less than budgeted improves profit, so it is a favourable variance. However, managers should check whether necessary training was missed.' },
+
+  // Policies and procedures
+  { topic: 'policies', question: 'What is the main difference between a policy and a procedure?',
+    options: ['A policy is legally binding; a procedure is not', 'A policy states what and why; a procedure states how', 'A procedure is written by the government', 'There is no difference'], answer: 1,
+    explanation: 'A policy sets out the organisation\'s rules and intentions on an issue. A procedure gives the step-by-step actions needed to follow the policy.' },
+  { topic: 'policies', question: 'An organisation collects customers\' dates of birth even though it never uses them. Which data protection principle does this break?',
+    options: ['Accuracy', 'Data minimisation', 'Accountability', 'Storage limitation'], answer: 1,
+    explanation: 'Data minimisation requires personal data to be adequate, relevant and limited to what is necessary. Collecting data that is never used breaks this principle.' },
+  { topic: 'policies', question: 'An employee feels they are being treated unfairly by their line manager. Which procedure should they use?',
+    options: ['Disciplinary procedure', 'Grievance procedure', 'Recruitment procedure', 'Appraisal procedure'], answer: 1,
+    explanation: 'A grievance procedure allows employees to raise complaints about their work or treatment. A disciplinary procedure is started by the employer about the employee\'s conduct or performance.' },
+  { topic: 'policies', question: 'Why should every policy have a version number and a review date?',
+    options: ['To make it look professional', 'So staff use the current version and it is kept up to date', 'Because the ICO requires it for all documents', 'So it can be sold to other organisations'], answer: 1,
+    explanation: 'Document control ensures only the latest approved version is in use and that the policy is reviewed regularly, for example after a change in law.' },
+
+  // Project and change management
+  { topic: 'projects', question: 'Which of the following best describes a project?',
+    options: ['A routine task carried out every day', 'A temporary piece of work with a defined start, end and objective', 'A permanent department of a business', 'A long-term company policy'], answer: 1,
+    explanation: 'Projects are temporary and unique, with specific objectives and resources. Routine, repeated work is business as usual, not a project.' },
+  { topic: 'projects', question: 'A risk has a likelihood of 4 and an impact of 5 on a 1 to 5 scale. What is its risk score?',
+    options: ['9', '1', '20', '45'], answer: 2,
+    explanation: 'Risk score = likelihood × impact = 4 × 5 = 20. This is a high risk that should be prioritised for mitigation.' },
+  { topic: 'projects', question: 'In Lewin\'s change model, what happens during the "unfreeze" stage?',
+    options: ['The new system is launched', 'Staff are prepared by explaining why change is needed', 'The new way of working is embedded', 'The project is closed'], answer: 1,
+    explanation: 'Unfreezing prepares people for change by communicating the reasons and challenging the current way of doing things. Change and refreeze follow.' },
+  { topic: 'projects', question: 'A task on the critical path is delayed by three days, and nothing else changes. What happens to the project?',
+    options: ['Nothing, as there is float time', 'The project finishes three days late', 'The project budget is reduced', 'The task is removed from the plan'], answer: 1,
+    explanation: 'Tasks on the critical path have no float (spare time), so any delay to them delays the whole project by the same amount unless action is taken.' }
+];
+
+/* ---------- Self-assessment learning outcomes ---------- */
+const CHECKLIST = [
+  { topic: 'context', items: [
+    'I can compare different legal structures and explain limited and unlimited liability.',
+    'I can write SMART objectives and explain how aims, objectives and mission statements link.',
+    'I can apply PESTLE and SWOT analysis to a business scenario.'
+  ]},
+  { topic: 'people', items: [
+    'I can describe the recruitment and selection process and compare internal and external recruitment.',
+    'I can apply motivation theories (Maslow and Herzberg) and leadership styles to a scenario.',
+    'I can explain Tuckman\'s stages and how performance is managed.'
+  ]},
+  { topic: 'behaviours', items: [
+    'I can explain professional and ethical behaviour and corporate social responsibility.',
+    'I can list the nine protected characteristics and explain the benefits of EDI.',
+    'I can identify barriers to communication and suggest ways to overcome them.'
+  ]},
+  { topic: 'quality', items: [
+    'I can distinguish between quality control, quality assurance and TQM.',
+    'I can apply the PDCA cycle and use KPIs to monitor quality.',
+    'I can explain the steps of a risk assessment and the consequences of non-compliance.'
+  ]},
+  { topic: 'finance', items: [
+    'I can calculate revenue, costs, profit, contribution and break-even, showing my workings.',
+    'I can complete a cash flow forecast and identify budget variances.',
+    'I can calculate profit margins and recommend suitable sources of finance.'
+  ]},
+  { topic: 'policies', items: [
+    'I can explain the difference between policies and procedures and why organisations need them.',
+    'I can apply the data protection principles to a workplace situation.',
+    'I can describe the policy life cycle and the purpose of document control.'
+  ]},
+  { topic: 'projects', items: [
+    'I can describe the project life cycle and the triple constraint.',
+    'I can interpret a Gantt chart, critical path and risk register.',
+    'I can apply Lewin\'s model and explain how to overcome resistance to change.'
+  ]}
+];
+
+/* ---------- Command words for the exam technique tab ---------- */
+const COMMAND_WORDS = [
+  ['State / Identify', 'Give a brief answer, such as a name, term or fact.', 'No explanation is needed. One mark usually means one short point.'],
+  ['Define', 'Give the precise meaning of a term.', 'Use the correct business vocabulary and avoid using the term to define itself.'],
+  ['Calculate', 'Work out a numerical answer.', 'Show the formula and your workings, and include units such as £ or %.'],
+  ['Describe', 'Give an account of the main features or steps.', 'Say what something is or does. You do not need to say why.'],
+  ['Explain', 'Give reasons or show how or why something happens.', 'Use linking phrases such as "because", "so" and "which means that".'],
+  ['Compare', 'Identify similarities and differences between two or more things.', 'Address both items in each point, for example using "whereas" or "in contrast".'],
+  ['Analyse', 'Break something down and examine its parts, causes and effects.', 'Build chains of reasoning that show the impact on the business.'],
+  ['Discuss', 'Present different viewpoints or aspects of an issue.', 'Cover more than one side and support each point with reasoning.'],
+  ['Evaluate / Assess', 'Weigh up strengths and weaknesses to reach a judgement.', 'Always finish with a clear, justified conclusion linked to the scenario.'],
+  ['Recommend / Justify', 'Choose a course of action and give reasons to support it.', 'Make a clear choice, then explain why it is better than the alternatives for this business.']
+];
+
+/* =======================================================================
+   APPLICATION CODE
+   You should not need to edit anything below this line.
+   ======================================================================= */
+
+/* ---------- Helpers ---------- */
+const $ = (id) => document.getElementById(id);
+const topicById = (id) => TOPICS.find((t) => t.id === id);
+const topicTitle = (id) => (topicById(id) || { title: id }).title;
+
+/* Create an element with optional properties and children. */
+function el(tag, props, children) {
+  const node = document.createElement(tag);
+  if (props) {
+    Object.keys(props).forEach((key) => {
+      if (key === 'text') node.textContent = props[key];
+      else if (key === 'html') node.innerHTML = props[key];
+      else if (key === 'className') node.className = props[key];
+      else node.setAttribute(key, props[key]);
+    });
+  }
+  (children || []).forEach((child) => { if (child) node.appendChild(child); });
+  return node;
+}
+
+/* Fisher-Yates shuffle that returns a new array. */
+function shuffle(list) {
+  const copy = list.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+/* Safe localStorage wrapper: every read and write is wrapped in try/catch so the
+   page still works in private browsing or when storage is blocked. */
+const store = {
+  get(key, fallback) {
+    try {
+      const raw = localStorage.getItem(CONFIG.storagePrefix + key);
+      return raw === null ? fallback : JSON.parse(raw);
+    } catch (e) { return fallback; }
+  },
+  set(key, value) {
+    try { localStorage.setItem(CONFIG.storagePrefix + key, JSON.stringify(value)); return true; }
+    catch (e) { return false; }
+  },
+  remove(key) {
+    try { localStorage.removeItem(CONFIG.storagePrefix + key); } catch (e) { /* ignore */ }
+  }
+};
+
+/* Populate a topic <select> with an "All topics" option followed by each topic. */
+function fillTopicSelect(select, countFn) {
+  select.appendChild(el('option', { value: 'all', text: 'All topics (' + countFn('all') + ')' }));
+  TOPICS.forEach((t) => select.appendChild(el('option', { value: t.id, text: t.title + ' (' + countFn(t.id) + ')' })));
+}
+
+/* =======================================================================
+   THEME TOGGLE (light / dark, saved per device)
+   ======================================================================= */
+const Theme = {
+  isDark() {
+    const attr = document.documentElement.getAttribute('data-theme');
+    if (attr) return attr === 'dark';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  },
+  update() {
+    const dark = this.isDark();
+    const btn = $('theme-toggle');
+    btn.setAttribute('aria-pressed', String(dark));
+    $('theme-label').textContent = 'Dark mode';
+    $('theme-icon').innerHTML = dark ? '&#9728;' : '&#9790;';
+    btn.setAttribute('aria-label', dark ? 'Dark mode is on. Switch to light mode' : 'Dark mode is off. Switch to dark mode');
+  },
+  init() {
+    $('theme-toggle').addEventListener('click', () => {
+      const next = this.isDark() ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('erh-theme', next); } catch (e) { /* storage unavailable */ }
+      this.update();
+    });
+    if (window.matchMedia) {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      if (mq.addEventListener) mq.addEventListener('change', () => this.update());
+    }
+    this.update();
+  }
+};
+
+/* =======================================================================
+   TABS (WAI-ARIA pattern with roving tabindex; the URL hash remembers the tab)
+   ======================================================================= */
+const Tabs = {
+  tabs: [],
+  init() {
+    this.tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+    this.tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => this.select(tab, true));
+      tab.addEventListener('keydown', (e) => {
+        let target = null;
+        if (e.key === 'ArrowRight') target = this.tabs[(i + 1) % this.tabs.length];
+        else if (e.key === 'ArrowLeft') target = this.tabs[(i - 1 + this.tabs.length) % this.tabs.length];
+        else if (e.key === 'Home') target = this.tabs[0];
+        else if (e.key === 'End') target = this.tabs[this.tabs.length - 1];
+        if (target) { e.preventDefault(); this.select(target, false); target.focus(); }
+      });
+    });
+    const fromHash = this.tabs.find((t) => '#' + t.id.replace('tab-', '') === location.hash);
+    if (fromHash) this.select(fromHash, false);
+  },
+  select(tab, scrollToTop) {
+    this.tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      $(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    try { history.replaceState(null, '', '#' + tab.id.replace('tab-', '')); } catch (e) { /* file:// may block this */ }
+    if (scrollToTop) window.scrollTo(0, 0);
+    if (tab.id === 'tab-home') Home.refresh();
+  },
+  open(name) { const t = $('tab-' + name); if (t) { this.select(t, true); t.focus(); } }
+};
+
+/* =======================================================================
+   HOME: exam details, countdown and progress summary
+   ======================================================================= */
+const Home = {
+  timer: null,
+  init() {
+    const dl = $('exam-details');
+    const date = new Date(CONFIG.examDate);
+    const dateText = isNaN(date) ? 'To be confirmed'
+      : date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) +
+        ' at ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    [['Date and time', dateText]].concat(CONFIG.details).forEach(([label, value]) => {
+      dl.appendChild(el('dt', { text: label }));
+      dl.appendChild(el('dd', { text: value }));
+    });
+    this.tick();
+    this.timer = setInterval(() => this.tick(), 1000);
+    this.refresh();
+  },
+  tick() {
+    const target = new Date(CONFIG.examDate).getTime();
+    const text = $('countdown-text');
+    if (isNaN(target)) { text.textContent = 'The exam date has not been set yet.'; return; }
+    let diff = Math.max(0, target - Date.now());
+    const days = Math.floor(diff / 86400000); diff -= days * 86400000;
+    const hours = Math.floor(diff / 3600000); diff -= hours * 3600000;
+    const mins = Math.floor(diff / 60000); diff -= mins * 60000;
+    const secs = Math.floor(diff / 1000);
+    $('cd-days').textContent = days;
+    $('cd-hours').textContent = String(hours).padStart(2, '0');
+    $('cd-mins').textContent = String(mins).padStart(2, '0');
+    $('cd-secs').textContent = String(secs).padStart(2, '0');
+    if (target <= Date.now()) {
+      text.textContent = 'The exam date has now passed. Well done for all your hard work.';
+      clearInterval(this.timer);
+    } else {
+      const weeks = Math.floor(days / 7);
+      text.textContent = days + (days === 1 ? ' day' : ' days') + ' to go' +
+        (weeks >= 1 ? ' (about ' + weeks + (weeks === 1 ? ' week' : ' weeks') + '). ' : '. ') +
+        (days > 14 ? 'Plenty of time to plan steady, regular revision sessions.'
+          : days > 3 ? 'Focus on your red and amber topics and practise exam questions.'
+          : 'Keep sessions short, review your flashcards and get a good night\'s sleep.');
+    }
+  },
+  refresh() {
+    // Checklist percentage
+    const pct = Checklist.percentage();
+    $('hp-checklist').textContent = pct + '%';
+    $('hp-checklist-bar').style.width = pct + '%';
+    // Planner RAG counts
+    const counts = Planner.counts();
+    const rated = counts.red + counts.amber + counts.green;
+    $('hp-rag').textContent = rated ? rated + ' of ' + TOPICS.length + ' rated' : 'Not rated yet';
+    $('hp-rag-detail').textContent = rated ? 'Red: ' + counts.red + ', Amber: ' + counts.amber + ', Green: ' + counts.green : 'Rate your topics in the revision planner.';
+    // Last quiz
+    const last = Quiz.last || store.get('quiz-last', null);
+    if (last && last.total) {
+      $('hp-quiz').textContent = last.score + ' / ' + last.total + ' (' + Math.round(last.score / last.total * 100) + '%)';
+      $('hp-quiz-detail').textContent = 'Taken on ' + new Date(last.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    } else {
+      $('hp-quiz').textContent = 'No attempts yet';
+      $('hp-quiz-detail').textContent = 'Try the practice quiz to see your score here.';
+    }
+  }
+};
+
+/* =======================================================================
+   TOPIC SUMMARIES: one collapsible card per topic
+   ======================================================================= */
+const Summaries = {
+  init() {
+    const list = $('summaries-list');
+    TOPICS.forEach((t, i) => {
+      const body = el('div', { className: 'topic-body' });
+      body.appendChild(el('p', { text: t.intro, style: 'margin-top:14px' }));
+
+      body.appendChild(el('h3', { text: 'Key points' }));
+      const ul = el('ul');
+      t.keyPoints.forEach((kp) => ul.appendChild(el('li', { html: kp })));
+      body.appendChild(ul);
+
+      body.appendChild(el('h3', { text: 'Key definitions' }));
+      const dl = el('dl', { className: 'defs' });
+      t.definitions.forEach(([term, def]) => {
+        dl.appendChild(el('div', null, [el('dt', { text: term }), el('dd', { html: def })]));
+      });
+      body.appendChild(dl);
+
+      const ex = el('div', { className: 'example' });
+      ex.appendChild(el('h3', { text: t.example.title, style: 'margin-top:4px' }));
+      if (t.example.text) ex.appendChild(el('p', { text: t.example.text }));
+      if (t.example.code) {
+        const code = el('code', { text: t.example.code });
+        ex.appendChild(el('pre', { tabindex: '0', 'aria-label': 'Code example' }, [code]));
+      }
+      if (t.example.html) ex.appendChild(el('div', { html: t.example.html }));
+      body.appendChild(ex);
+
+      const summary = el('summary', null, [
+        el('span', { className: 'topic-num', 'aria-hidden': 'true', text: String(i + 1) }),
+        el('span', { text: t.title })
+      ]);
+      list.appendChild(el('details', { className: 'topic-card', id: 'topic-' + t.id }, [summary, body]));
+    });
+
+    const all = () => Array.from(document.querySelectorAll('details.topic-card'));
+    $('expand-all').addEventListener('click', () => all().forEach((d) => { d.open = true; }));
+    $('collapse-all').addEventListener('click', () => all().forEach((d) => { d.open = false; }));
+    $('print-summaries').addEventListener('click', () => window.print());
+
+    // Expand every card for printing, then restore the reader's view afterwards.
+    let previous = [];
+    window.addEventListener('beforeprint', () => {
+      previous = all().map((d) => d.open);
+      all().forEach((d) => { d.open = true; });
+    });
+    window.addEventListener('afterprint', () => {
+      all().forEach((d, i) => { d.open = previous[i] || false; });
+    });
+  }
+};
+
+/* =======================================================================
+   FLASHCARDS: flip, previous / next, shuffle and topic filter
+   ======================================================================= */
+const Flashcards = {
+  deck: [],
+  index: 0,
+  flipped: false,
+  init() {
+    fillTopicSelect($('flash-topic'), (id) => FLASHCARDS.filter((c) => id === 'all' || c.topic === id).length);
+    $('flash-topic').addEventListener('change', () => this.build(false));
+    $('flash-shuffle').addEventListener('click', () => this.build(true));
+    $('flash-reset').addEventListener('click', () => this.build(false));
+    $('flash-prev').addEventListener('click', () => this.move(-1));
+    $('flash-next').addEventListener('click', () => this.move(1));
+    $('flashcard').addEventListener('click', () => this.flip());
+    // Arrow keys move between cards when focus is inside the flashcard area (not in the select).
+    $('panel-flashcards').addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'SELECT') return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); this.move(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); this.move(-1); }
+    });
+    this.build(false);
+  },
+  build(shuffled) {
+    const topic = $('flash-topic').value;
+    const cards = FLASHCARDS.filter((c) => topic === 'all' || c.topic === topic);
+    this.deck = shuffled ? shuffle(cards) : cards;
+    this.index = 0;
+    this.render();
+    if (shuffled) $('flash-live').textContent = 'Cards shuffled.';
+  },
+  move(step) {
+    if (!this.deck.length) return;
+    this.index = (this.index + step + this.deck.length) % this.deck.length;
+    this.render();
+  },
+  flip() {
+    this.flipped = !this.flipped;
+    this.applyFlip();
+    $('flash-live').textContent = this.flipped ? 'Answer: ' + this.deck[this.index].back : 'Question: ' + this.deck[this.index].front;
+  },
+  applyFlip() {
+    $('flashcard').classList.toggle('is-flipped', this.flipped);
+    $('flash-front').setAttribute('aria-hidden', String(this.flipped));
+    $('flash-back').setAttribute('aria-hidden', String(!this.flipped));
+  },
+  render() {
+    const card = this.deck[this.index];
+    this.flipped = false;
+    this.applyFlip();
+    if (!card) { $('flash-front-text').textContent = 'No cards for this topic.'; $('flash-count').textContent = ''; return; }
+    $('flash-front-topic').textContent = topicTitle(card.topic);
+    $('flash-front-text').textContent = card.front;
+    $('flash-back-text').textContent = card.back;
+    $('flash-count').textContent = 'Card ' + (this.index + 1) + ' of ' + this.deck.length;
+  }
+};
+
+/* =======================================================================
+   PRACTICE QUIZ: instant feedback, explanations and per-topic results
+   ======================================================================= */
+const Quiz = {
+  questions: [],
+  index: 0,
+  score: 0,
+  results: [],           // { q, correct } for each answered question
+  optionOrder: [],       // shuffled option indexes for the current question
+  checked: false,
+  last: null,            // most recent result, kept in memory as well as in storage
+
+  init() {
+    const count = (id) => QUIZ_QUESTIONS.filter((q) => id === 'all' || q.topic === id).length;
+    fillTopicSelect($('quiz-topic'), count);
+    const info = () => { $('quiz-count-info').textContent = count($('quiz-topic').value) + ' questions. The order of questions and options is shuffled each time.'; };
+    $('quiz-topic').addEventListener('change', info);
+    info();
+    $('quiz-begin').addEventListener('click', () => {
+      const topic = $('quiz-topic').value;
+      this.start(QUIZ_QUESTIONS.filter((q) => topic === 'all' || q.topic === topic));
+    });
+    $('quiz-form').addEventListener('submit', (e) => { e.preventDefault(); this.check(); });
+    $('q-next').addEventListener('click', () => this.next());
+    $('q-quit').addEventListener('click', () => this.finish());
+    $('r-restart').addEventListener('click', () => this.showStart());
+    $('r-retry-wrong').addEventListener('click', () => {
+      this.start(this.results.filter((r) => !r.correct).map((r) => r.q));
+    });
+    $('r-planner').addEventListener('click', () => Tabs.open('planner'));
+  },
+  showStart() {
+    $('quiz-start').hidden = false;
+    $('quiz-area').hidden = true;
+    $('quiz-results').hidden = true;
+    $('quiz-topic').focus();
+  },
+  start(list) {
+    if (!list.length) return;
+    this.questions = shuffle(list);
+    this.index = 0;
+    this.score = 0;
+    this.results = [];
+    $('quiz-start').hidden = true;
+    $('quiz-results').hidden = true;
+    $('quiz-area').hidden = false;
+    this.render();
+    $('q-text').setAttribute('tabindex', '-1');
+    $('q-text').focus();
+  },
+  render() {
+    const q = this.questions[this.index];
+    const n = this.index + 1;
+    const total = this.questions.length;
+    this.checked = false;
+    $('q-progress').textContent = 'Question ' + n + ' of ' + total;
+    $('q-legend').textContent = 'Question ' + n + ' of ' + total + ': ' + q.question;
+    $('q-topic').textContent = topicTitle(q.topic);
+    $('q-bar').style.width = ((n - 1) / total * 100) + '%';
+    $('q-text').textContent = q.question;
+    const pre = $('q-code');
+    pre.hidden = !q.code;
+    pre.querySelector('code').textContent = q.code || '';
+
+    const ul = $('q-options');
+    ul.innerHTML = '';
+    this.optionOrder = shuffle(q.options.map((_, i) => i));
+    this.optionOrder.forEach((origIndex, pos) => {
+      const id = 'q-opt-' + pos;
+      const input = el('input', { type: 'radio', name: 'quiz-option', id: id, value: String(origIndex) });
+      const label = el('label', { for: id }, [input, el('span', null, [
+        el('span', { text: q.options[origIndex] }),
+        el('span', { className: 'opt-flag' })
+      ])]);
+      ul.appendChild(el('li', { className: 'option' }, [label]));
+    });
+
+    $('q-feedback').innerHTML = '';
+    $('q-check').hidden = false;
+    $('q-next').hidden = true;
+  },
+  check() {
+    if (this.checked) return;
+    const chosen = document.querySelector('input[name="quiz-option"]:checked');
+    const fb = $('q-feedback');
+    if (!chosen) {
+      fb.innerHTML = '';
+      fb.appendChild(el('div', { className: 'feedback info', text: 'Please select an answer before checking.' }));
+      return;
+    }
+    this.checked = true;
+    const q = this.questions[this.index];
+    const correct = Number(chosen.value) === q.answer;
+    if (correct) this.score++;
+    this.results.push({ q: q, correct: correct });
+
+    // Mark options using text as well as colour, so meaning never relies on colour alone.
+    document.querySelectorAll('input[name="quiz-option"]').forEach((input) => {
+      input.disabled = true;
+      const li = input.closest('.option');
+      const flag = li.querySelector('.opt-flag');
+      if (Number(input.value) === q.answer) { li.classList.add('is-correct'); flag.textContent = '✓ Correct answer'; }
+      else if (input === chosen) { li.classList.add('is-wrong'); flag.textContent = '✗ Your answer'; }
+    });
+
+    fb.innerHTML = '';
+    fb.appendChild(el('div', { className: 'feedback ' + (correct ? 'good' : 'bad') }, [
+      el('strong', { text: correct ? 'Correct, well done.' : 'Not quite. The correct answer is: ' + q.options[q.answer] }),
+      el('span', { text: q.explanation })
+    ]));
+
+    $('q-bar').style.width = ((this.index + 1) / this.questions.length * 100) + '%';
+    $('q-check').hidden = true;
+    const next = $('q-next');
+    next.textContent = this.index + 1 < this.questions.length ? 'Next question' : 'See my results';
+    next.hidden = false;
+    next.focus();
+  },
+  next() {
+    if (this.index + 1 < this.questions.length) {
+      this.index++;
+      this.render();
+      $('q-text').focus();
+    } else {
+      this.finish();
+    }
+  },
+  finish() {
+    const answered = this.results.length;
+    $('quiz-area').hidden = true;
+    if (!answered) { this.showStart(); return; }
+
+    const pct = Math.round(this.score / answered * 100);
+    $('r-score').textContent = this.score + ' / ' + answered + ' (' + pct + '%)';
+    $('r-message').textContent =
+      pct >= 80 ? 'Excellent work. Keep your knowledge fresh with regular flashcard practice.'
+      : pct >= 60 ? 'Good progress. Review the explanations for the questions you missed and revisit those topics.'
+      : 'This is a useful starting point. Focus on the topics with the lowest scores below, then try again.';
+
+    // Per-topic breakdown
+    const byTopic = {};
+    this.results.forEach((r) => {
+      byTopic[r.q.topic] = byTopic[r.q.topic] || { correct: 0, total: 0 };
+      byTopic[r.q.topic].total++;
+      if (r.correct) byTopic[r.q.topic].correct++;
+    });
+    const box = $('r-breakdown');
+    box.innerHTML = '';
+    TOPICS.filter((t) => byTopic[t.id]).forEach((t) => {
+      const s = byTopic[t.id];
+      const p = Math.round(s.correct / s.total * 100);
+      const fill = el('div', { className: 'progress-fill', style: 'width:' + p + '%' });
+      box.appendChild(el('div', { className: 'breakdown-row' }, [
+        el('span', { text: t.title }),
+        el('div', { className: 'progress', role: 'progressbar', 'aria-label': t.title + ' score', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(p) }, [fill]),
+        el('strong', { text: s.correct + ' / ' + s.total + ' (' + p + '%)' })
+      ]));
+    });
+
+    $('r-retry-wrong').hidden = this.score === answered;
+    this.last = { score: this.score, total: answered, date: Date.now(), byTopic: byTopic };
+    store.set('quiz-last', this.last);   // this.last keeps the score on Home even if storage is blocked
+    $('quiz-results').hidden = false;
+    $('quiz-results').focus();
+  }
+};
+
+/* =======================================================================
+   EXAM TECHNIQUE: command words table and time per mark calculator
+   ======================================================================= */
+const Technique = {
+  init() {
+    const tbody = $('command-words');
+    COMMAND_WORDS.forEach(([word, meaning, tip]) => {
+      tbody.appendChild(el('tr', null, [el('td', { text: word }), el('td', { text: meaning }), el('td', { text: tip })]));
+    });
+    $('calc-total').value = CONFIG.calculator.total;
+    $('calc-reserve').value = CONFIG.calculator.reserve;
+    $('calc-marks').value = CONFIG.calculator.marks;
+    ['calc-total', 'calc-reserve', 'calc-marks'].forEach((id) => $(id).addEventListener('input', () => this.calc()));
+    this.calc();
+  },
+  calc() {
+    const total = Number($('calc-total').value);
+    const reserve = Number($('calc-reserve').value);
+    const marks = Number($('calc-marks').value);
+    const out = $('calc-out');
+    if (!(total > 0) || !(marks > 0) || reserve < 0 || reserve >= total) {
+      out.textContent = 'Enter an exam length, a reading and checking time shorter than the exam, and the total marks.';
+      return;
+    }
+    const perMark = (total - reserve) / marks;
+    out.textContent = 'You have about ' + perMark.toFixed(1) + ' minutes per mark. A 6-mark question deserves roughly ' +
+      Math.round(perMark * 6) + ' minutes, and a 15-mark question roughly ' + Math.round(perMark * 15) + ' minutes.';
+  }
+};
+
+/* =======================================================================
+   REVISION PLANNER: red / amber / green confidence and dates (localStorage)
+   ======================================================================= */
+const Planner = {
+  data: {},
+  labels: { '': 'Not rated', red: 'Red: not confident', amber: 'Amber: partly confident', green: 'Green: confident' },
+  init() {
+    this.data = store.get('planner', {}) || {};
+    const tbody = $('planner-body');
+    TOPICS.forEach((t) => {
+      const row = this.data[t.id] || { rag: '', date: '', notes: '' };
+      const select = el('select', { id: 'rag-' + t.id, 'aria-label': 'Confidence for ' + t.title });
+      Object.keys(this.labels).forEach((k) => select.appendChild(el('option', { value: k, text: this.labels[k] })));
+      select.value = row.rag || '';
+      const chip = el('span', { className: 'rag-chip', 'aria-hidden': 'true' });
+      const date = el('input', { type: 'date', id: 'date-' + t.id, 'aria-label': 'Revision date for ' + t.title });
+      date.value = row.date || '';
+      const notes = el('input', { type: 'text', id: 'notes-' + t.id, 'aria-label': 'Notes or actions for ' + t.title, placeholder: 'For example: practise break-even calculations', maxlength: '200' });
+      notes.value = row.notes || '';
+
+      const tr = el('tr', { 'data-rag': row.rag || '' }, [
+        el('th', { scope: 'row' }, [el('span', { text: t.title })]),
+        el('td', { 'data-label': 'Confidence' }, [select, chip]),
+        el('td', { 'data-label': 'Revision date' }, [date]),
+        el('td', { 'data-label': 'Notes or actions' }, [notes])
+      ]);
+      tbody.appendChild(tr);
+      this.updateChip(tr, select.value);
+
+      const save = () => {
+        this.data[t.id] = { rag: select.value, date: date.value, notes: notes.value };
+        tr.setAttribute('data-rag', select.value);
+        this.updateChip(tr, select.value);
+        this.save();
+      };
+      select.addEventListener('change', save);
+      date.addEventListener('change', save);
+      notes.addEventListener('input', save);
+    });
+    $('planner-clear').addEventListener('click', () => {
+      if (!window.confirm('Clear all ratings, dates and notes in the planner? This cannot be undone.')) return;
+      this.data = {};
+      store.remove('planner');
+      TOPICS.forEach((t) => {
+        $('rag-' + t.id).value = ''; $('date-' + t.id).value = ''; $('notes-' + t.id).value = '';
+        const tr = $('rag-' + t.id).closest('tr');
+        tr.setAttribute('data-rag', '');
+        this.updateChip(tr, '');
+      });
+      $('planner-status').textContent = 'Planner cleared.';
+      this.summary();
+    });
+    this.summary();
+  },
+  updateChip(tr, rag) {
+    const chip = tr.querySelector('.rag-chip');
+    chip.className = 'rag-chip' + (rag ? ' ' + rag : '');
+    chip.textContent = rag ? rag.charAt(0).toUpperCase() + rag.slice(1) : 'Not rated';
+  },
+  save() {
+    const ok = store.set('planner', this.data);
+    $('planner-status').textContent = ok ? 'Saved' : 'Could not save: your browser is blocking storage, so entries will be lost when you close the page.';
+    this.summary();
+  },
+  counts() {
+    const c = { red: 0, amber: 0, green: 0, none: 0 };
+    TOPICS.forEach((t) => {
+      const rag = (this.data[t.id] || {}).rag;
+      if (rag && c[rag] !== undefined) c[rag]++; else c.none++;
+    });
+    return c;
+  },
+  summary() {
+    const c = this.counts();
+    const box = $('rag-summary');
+    box.innerHTML = '';
+    [['red', 'Red'], ['amber', 'Amber'], ['green', 'Green'], ['', 'Not rated']].forEach(([key, label]) => {
+      const n = key ? c[key] : c.none;
+      box.appendChild(el('span', { className: 'rag-chip' + (key ? ' ' + key : ''), text: label + ': ' + n }));
+    });
+    // Suggest a revision order: red first, then amber, then unrated, then green.
+    const rank = { red: 0, amber: 1, '': 2, green: 3 };
+    const order = TOPICS.slice().sort((a, b) => rank[(this.data[a.id] || {}).rag || ''] - rank[(this.data[b.id] || {}).rag || '']);
+    const priority = order.filter((t) => ['red', 'amber'].includes((this.data[t.id] || {}).rag));
+    $('planner-advice').textContent = priority.length
+      ? 'Suggested priority: ' + priority.map((t) => t.title).join(', then ') + '.'
+      : (c.none === TOPICS.length ? 'Rate each topic to see a suggested revision priority.' : 'No red or amber topics. Keep your knowledge fresh with flashcards and practice questions.');
+  }
+};
+
+/* =======================================================================
+   SELF-ASSESSMENT CHECKLIST: tick boxes with a percentage progress bar
+   ======================================================================= */
+const Checklist = {
+  ticked: {},
+  total() { return CHECKLIST.reduce((sum, g) => sum + g.items.length, 0); },
+  percentage() {
+    const done = Object.keys(this.ticked).filter((k) => this.ticked[k]).length;
+    return this.total() ? Math.round(done / this.total() * 100) : 0;
+  },
+  init() {
+    this.ticked = store.get('checklist', {}) || {};
+    const form = $('checklist-form');
+    CHECKLIST.forEach((group) => {
+      const fs = el('fieldset', { className: 'checklist-group' }, [el('legend', { text: topicTitle(group.topic) })]);
+      group.items.forEach((text, i) => {
+        const key = group.topic + '-' + i;
+        const id = 'chk-' + key;
+        const input = el('input', { type: 'checkbox', id: id });
+        input.checked = !!this.ticked[key];
+        const label = el('label', { className: 'check-item' + (input.checked ? ' done' : ''), for: id }, [input, el('span', { text: text })]);
+        input.addEventListener('change', () => {
+          this.ticked[key] = input.checked;
+          label.classList.toggle('done', input.checked);
+          store.set('checklist', this.ticked);
+          this.update();
+        });
+        fs.appendChild(label);
+      });
+      form.appendChild(fs);
+    });
+    $('checklist-reset').addEventListener('click', () => {
+      if (!window.confirm('Untick all learning outcomes?')) return;
+      this.ticked = {};
+      store.remove('checklist');
+      form.querySelectorAll('input[type=checkbox]').forEach((c) => { c.checked = false; c.closest('label').classList.remove('done'); });
+      this.update();
+    });
+    this.update();
+  },
+  update() {
+    const done = Object.keys(this.ticked).filter((k) => this.ticked[k]).length;
+    const pct = this.percentage();
+    $('check-progress-text').textContent = done + ' of ' + this.total() + ' outcomes achieved (' + pct + '%)';
+    $('check-progress-fill').style.width = pct + '%';
+    $('check-progressbar').setAttribute('aria-valuenow', String(pct));
+    $('check-progressbar').setAttribute('aria-valuetext', pct + '%');
+  }
+};
+
+/* =======================================================================
+   START UP
+   Planner and Checklist load first because Home reads their saved data.
+   ======================================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  Theme.init();
+  Planner.init();
+  Checklist.init();
+  Summaries.init();
+  Flashcards.init();
+  Quiz.init();
+  Technique.init();
+  Home.init();
+  Tabs.init();
+});
+</script>
+</body>
+</html>
